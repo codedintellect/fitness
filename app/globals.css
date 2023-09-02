@@ -12,6 +12,7 @@
 body {
   color: rgb(var(--foreground-rgb));
   background-color: rgb(var(--background-rgb));
+  user-select: none;
 }
 
 h1,

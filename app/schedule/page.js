@@ -7,6 +7,12 @@ export default function Schedule() {
   const [selectedMonth, setMonth] = useState(new Date().getMonth());
 
   function changeMonth(delta) {
+    if (selectedMonth == new Date().getMonth() && delta == -1) {
+      return null;
+    }
+    if (selectedMonth == new Date().getMonth() + 2 && delta == 1) {
+      return null;
+    }
     setMonth((selectedMonth + delta + 12) % 12);
     return null;
   }
@@ -19,16 +25,14 @@ export default function Schedule() {
     let result = [];
 
     for (var i = 0; i < daysInMonth; i++) {
-      result.push(<Day day={new Date(year, month, i + 1)}/>);
+      result.push(<Day day={new Date(year, month, i + 1)} sessions={null}/>);
     }
-
-    console.log(year)
 
     return (result)
   }
 
   return (
-    <main className="relative flex flex-col justify-items-center basis-full text-left mx-auto max-w-2xl mt-6">
+    <main className="flex flex-col justify-items-center basis-full text-left mx-auto max-w-2xl mt-6">
       <h1 className="text-2xl text-center sm:text-4xl">
         Тренировки с Анжелой Андерсон
       </h1>
@@ -43,23 +47,41 @@ export default function Schedule() {
           </button>
         </p>
       </div>
-      <div className='relative basis-full shrink overflow-scroll'>
+      <div className=''>
         {generateCalendar(selectedMonth)}
       </div>
     </main>
   )
 }
 
-function Day({day}) {
+function Day({day, sessions}) {
   const dayOfWeek = ["ВОСКРЕСЕНЬЕ", "ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА"];
+
+  let bgColor = "bg-white";
+  if (sessions) {
+    bgColor = "bg-selection";
+  }
+  if (new Date() - day > 1000*60*60*24) {
+    bgColor = "bg-gray-200";
+  }
+
   return (
-    <div className={(new Date() - day > 1000*60*60*24 ? "bg-gray-300" : "bg-white") + " p-1 m-2 border-2 border-black rounded-lg"}>
-      <span className="pr-4 font-black">
-        {day.toLocaleString("ru-ru", {day: "2-digit", month: "2-digit"})}
-      </span>
-      <span className="font-black">
-        {dayOfWeek[day.getDay()]}
-      </span>
+    <div className={bgColor + " relative p-1 m-2 border-2 border-black rounded-lg"}>
+      <div className="w-full">
+        <span className="pr-4 font-bold">
+          {day.toLocaleString("ru-ru", {day: "2-digit", month: "2-digit"})}
+        </span>
+        <span className="font-bold">
+          {dayOfWeek[day.getDay()]}
+        </span>
+      </div>
+      <div className={sessions ? "hidden" : ""}>
+        <span className="text-2xl text-fallback">
+          НЕТ ЗАНЯТИЙ
+        </span>
+      </div>
+      <div className={sessions ? "" : "hidden"}>
+      </div>
     </div>
   )
 }
