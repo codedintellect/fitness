@@ -6,11 +6,17 @@ export default function Schedule() {
   const months = ['ЯНВАРЬ', 'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ', 'ИЮЛЬ', 'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ', 'ДЕКАБРЬ'];
   const [selectedMonth, setMonth] = useState(new Date().getMonth());
 
-  function changeMonth(delta) {
-    if (selectedMonth == new Date().getMonth() && delta == -1) {
-      return null;
+  function clampMonth(delta) {
+    const availableMonths = 3;
+    let whitelist = [];
+    for (var i = 0; i < availableMonths; i++) {
+      whitelist.push((new Date().getMonth() + i) % 12);
     }
-    if (selectedMonth == new Date().getMonth() + 2 && delta == 1) {
+    return !(whitelist.includes(selectedMonth + delta));
+  }
+
+  function changeMonth(delta) {
+    if (clampMonth(delta)) {
       return null;
     }
     setMonth((selectedMonth + delta + 12) % 12);
@@ -32,22 +38,22 @@ export default function Schedule() {
   }
 
   return (
-    <main className='flex flex-col justify-items-center basis-full text-left mx-auto max-w-2xl'>
+    <main className='flex flex-col justify-items-center basis-full text-left mx-auto max-w-2xl h-screen'>
       <h1 className='text-2xl text-center sm:text-4xl mt-6'>
         Тренировки с Анжелой Андерсон
       </h1>
-      <div className='mx-auto text-3xl text-white font-medium py-1 my-4' style={{backgroundColor: 'rgb(var(--selection-rgb))'}}>
+      <div className='mx-auto bg-selection text-3xl text-white font-medium py-1 my-4'>
         <p>
-          <button className='px-2' onClick={() => changeMonth(-1)}>
+          <button className='px-2' style={{color: `${clampMonth(-1) ? 'rgb(var(--fallback-rgb))' : 'rgb(255, 255, 255)'}`}} onClick={() => changeMonth(-1)}>
             &lt;
           </button>
           ЗАПИСЬ НА {months[selectedMonth]}
-          <button className='px-2' onClick={() => changeMonth(1)}>
+          <button className='px-2' style={{color: `${clampMonth(1) ? 'rgb(var(--fallback-rgb))' : 'rgb(255, 255, 255)'}`}} onClick={() => changeMonth(1)}>
             &gt;
           </button>
         </p>
       </div>
-      <div className=''>
+      <div className='overflow-scroll grow'>
         {generateCalendar(selectedMonth)}
       </div>
     </main>
