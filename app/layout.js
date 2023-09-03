@@ -6,22 +6,27 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link'
+import { useState } from 'react'
 
 const neucha = Neucha({ subsets: ['latin', 'cyrillic'], weight: '400', variable: '--neucha-font' })
 const marck = Marck_Script({ subsets: ['latin', 'cyrillic'], weight: '400', variable: '--marck-font' })
 
 export default function RootLayout({ children }) {
+  const [sideMenu, setMenu] = useState(false);
+  function toggleMenu() {
+    setMenu(!sideMenu);
+  }
   return (
     <html lang='ru' className={`${neucha.variable} ${marck.variable}`}>
       <body>
-        <SideMenu />
+        <SideMenu sideMenu={sideMenu} toggleMenu={toggleMenu} />
         {children}
       </body>
     </html>
   )
 }
 
-function SideMenu() {
+function SideMenu({sideMenu, toggleMenu}) {
   const options = [
     {
       name: 'О тренере Анжеле',
@@ -38,9 +43,9 @@ function SideMenu() {
   ]
   return (
     <main className='fixed'>
-      <div className='fixed h-full border-r-2 border-black'>
-        <div className='relative h-full flex flex-col gap-2 bg-fallback'>
-          <span className='text-4xl text-center font-bold mx-10 mt-3'>
+      <div style={{maxWidth: `${sideMenu * 768}px`}} className='fixed h-full border-r-2 border-black overflow-hidden transition-all duration-300'>
+        <div className='relative h-full w-fit flex flex-col gap-2 bg-fallback whitespace-nowrap'>
+          <span className='w-full text-4xl text-center font-bold mt-3'>
             Информация
           </span>
           <div className='grow flex flex-col gap-1 overflow-scroll px-2'>
@@ -60,7 +65,7 @@ function SideMenu() {
           </span>
         </div>
       </div>
-      <button className='fixed m-2'>
+      <button className='fixed m-2' onClick={toggleMenu}>
         <i className='bi bi-list text-4xl'></i>
       </button>
     </main>
