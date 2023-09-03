@@ -45,10 +45,10 @@ function SideMenu() {
           </span>
           <div className='grow flex flex-col gap-1 overflow-scroll px-2'>
             {
-              options.map((item) => {
+              options.map((item, index) => {
                 return (
-                  <Link href={item.path}>
-                    <div className={`w-full text-3xl text-left bg-${usePathname() == item.path ? "selection" : "primary"} px-3 border-2 border-black rounded-lg`}>
+                  <Link key={index} href={item.path}>
+                    <div className={`w-full text-3xl text-left ${usePathname() == item.path ? "bg-selection" : "bg-primary"} px-3 border-2 border-black rounded-lg`}>
                       {item.name}
                     </div>
                   </Link>
