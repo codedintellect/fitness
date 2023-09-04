@@ -42,7 +42,7 @@ function SideMenu({sideMenu, toggleMenu}) {
     }
   ]
   return (
-    <main className='fixed'>
+    <main className='fixed z-[100]'>
       <div style={{maxWidth: `${sideMenu * 768}px`}} className='fixed h-full border-r-2 border-black overflow-hidden transition-all duration-300'>
         <div className='relative h-full w-fit flex flex-col gap-2 bg-fallback whitespace-nowrap'>
           <span className='w-full text-4xl text-center font-bold mt-3'>
