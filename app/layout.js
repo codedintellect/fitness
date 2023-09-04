@@ -70,18 +70,18 @@ function SideMenu({sideMenu, toggleMenu}) {
       </button>
     </main>
   )
-}
 
-function PageSelector({item, index}) {
-  let color = "bg-primary";
-  if (usePathname() == item.path) {
-    color = "bg-selection";
+  function PageSelector({item, index}) {
+    let color = "bg-primary";
+    if (usePathname() == item.path) {
+      color = "bg-selection";
+    }
+    return (
+      <Link key={index} href={item.path}>
+        <div className={`w-full text-3xl ${color} px-3 border-2 border-black rounded-lg`} onClick={toggleMenu}>
+          {item.name}
+        </div>
+      </Link>
+    )
   }
-  return (
-    <Link key={index} href={item.path}>
-      <div className={`w-full text-3xl ${color} px-3 border-2 border-black rounded-lg`}>
-        {item.name}
-      </div>
-    </Link>
-  )
 }
