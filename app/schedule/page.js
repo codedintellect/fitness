@@ -39,7 +39,7 @@ export default function Schedule() {
 
   return (
     <main className='flex flex-col justify-items-center basis-full text-left mx-auto max-w-2xl h-screen'>
-      <h1 className='text-2xl text-center sm:text-4xl mt-6'>
+      <h1 className='text-xl text-center sm:text-4xl mt-4 sm:mt-6'>
         Тренировки с Анжелой Андерсон
       </h1>
       <div className='mx-auto bg-selection text-3xl text-white font-medium py-1 my-4'>
