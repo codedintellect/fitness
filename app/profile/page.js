@@ -1,15 +1,31 @@
 'use client'
 
-import { logout } from '../firebase'
+import { auth, logout, database } from '../firebase'
+import { ref, onValue } from "firebase/database";
+
+import { useState, useEffect } from 'react'
 
 export default function Profile() {
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      const userNumber = auth.currentUser.email.split('@')[0];
+      const userRef = ref(database, `users/${userNumber}`);
+
+      return onValue(userRef, (snapshot) => {
+        setUserData(snapshot.val());
+      });
+    }
+  }, []);
+
   return (
     <main className='relative flex flex-col justify-items-center basis-full text-left px-2 sm:mx-auto inset-y-0 sm:max-w-2xl'>
-      <h1 className='text-xl text-center sm:text-4xl mt-4 sm:mt-6'>
-        Профиль
-      </h1>
+      <span className='text-4xl text-center mt-4 sm:mt-6'>
+        ПРОФИЛЬ
+      </span>
       <p className='text-xl sm:text-2xl text-center'>
-        Имя Человека                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+        {userData.name}
       </p>
       <div className='flex flex-row items-center'>
         TEMP
