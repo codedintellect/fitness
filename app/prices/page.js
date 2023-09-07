@@ -11,7 +11,7 @@ export default function Prices() {
   useEffect(() => {
     const dataRef = ref(database, 'purchase');
 
-    onValue(dataRef, (snapshot) => {
+    return onValue(dataRef, (snapshot) => {
       setListings(snapshot.val());
       console.log(listings);
     });
@@ -20,7 +20,7 @@ export default function Prices() {
 
   return (
     <main className='flex flex-col text-left px-2 sm:mx-auto sm:max-w-2xl'>
-      <h1 className='text-xl text-center sm:text-4xl mt-4 sm:mt-6'>
+      <h1 className='text-xl text-center sm:text-4xl my-4 sm:mt-6'>
         Цены
       </h1>
       {listings.map((i, k) => {
@@ -51,7 +51,7 @@ function ContactButton({text}) {
   useEffect(() => {
     const phoneRef = ref(database, 'contact');
 
-    onValue(phoneRef, (snapshot) => {
+    return onValue(phoneRef, (snapshot) => {
       setPhone(snapshot.val());
       console.log(phone);
     });
