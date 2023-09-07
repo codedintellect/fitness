@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link'
 import { useState } from 'react'
 
+import { user } from './firebase'
+
 const neucha = Neucha({ subsets: ['latin', 'cyrillic'], weight: '400', variable: '--neucha-font' })
 const marck = Marck_Script({ subsets: ['latin', 'cyrillic'], weight: '400', variable: '--marck-font' })
 
@@ -27,6 +29,7 @@ export default function RootLayout({ children }) {
 }
 
 function SideMenu({sideMenu, toggleMenu}) {
+  console.log(user);
   const options = [
     {
       name: 'О тренере Анжеле',
@@ -52,13 +55,14 @@ function SideMenu({sideMenu, toggleMenu}) {
             {
               options.map((item, index) => {
                 return (
-                  <PageSelector item={item} index={index} />
+                  <PageSelector item={item} key={index} />
                 )
               })
             }
           </div>
           <div className='flex flex-col gap-1 px-2 text-center'>
-            <PageSelector item={{name: 'Авторизоваться', path: '/auth'}} index={999} />
+            {user==null && <PageSelector item={{name: 'Авторизоваться', path: '/auth'}} key={999} />}
+            {user!=null && <PageSelector item={{name: 'Профиль', path: '/profile'}} key={999} />}
           </div>
           <span className='text-2xl text-center font-medium'>
             @sanchos.fit
@@ -71,13 +75,13 @@ function SideMenu({sideMenu, toggleMenu}) {
     </main>
   )
 
-  function PageSelector({item, index}) {
+  function PageSelector({item}) {
     let color = "bg-primary";
     if (usePathname() == item.path) {
       color = "bg-selection";
     }
     return (
-      <Link key={index} href={item.path}>
+      <Link href={item.path}>
         <div className={`w-full text-3xl ${color} px-3 border-2 border-black rounded-lg`} onClick={toggleMenu}>
           {item.name}
         </div>
