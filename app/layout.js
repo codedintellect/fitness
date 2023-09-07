@@ -5,8 +5,6 @@ import { Neucha, Marck_Script } from 'next/font/google'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import { redirect, usePathname } from 'next/navigation';
-import Link from 'next/link'
-import Image from 'next/image';
 import { useState, useEffect } from 'react'
 
 import { auth } from './firebase'
