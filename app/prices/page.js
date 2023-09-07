@@ -20,9 +20,9 @@ export default function Prices() {
 
   return (
     <main className='flex flex-col text-left px-2 sm:mx-auto sm:max-w-2xl'>
-      <h1 className='text-xl text-center sm:text-4xl my-4 sm:mt-6'>
-        Цены
-      </h1>
+      <span className='text-4xl text-center my-4 sm:mt-6'>
+        ЦЕНЫ
+      </span>
       {listings.map((i, k) => {
         return (<Item key={`listing${k}`} title={i.title} price={i.price} subline={i.subline} message={i.message} />);
       })}
