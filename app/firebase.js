@@ -16,20 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
-
-export var user = auth.currentUser;
-
-onAuthStateChanged(auth, (u) => {
-  user = u;
-  if (u) {
-
-  }
-  else {
-
-  }
-  console.log(user);
-});
+export const auth = getAuth(app);
 
 export function login(phone, password) {
   // Since user creation is handled by the website admin, we wish to avoid
