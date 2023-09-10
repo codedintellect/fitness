@@ -9,7 +9,12 @@
   --fallback-rgb: 148, 148, 148;
 }
 
+html {
+  height: 100%;
+}
+
 body {
+  height: 100%;
   color: rgb(var(--foreground-rgb));
   background-color: rgb(var(--background-rgb));
   user-select: none;

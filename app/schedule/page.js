@@ -38,7 +38,7 @@ export default function Schedule() {
   }
 
   return (
-    <main className='flex flex-col justify-items-center basis-full text-left mx-auto max-w-2xl h-screen'>
+    <main className='relative flex flex-col text-left mx-auto max-w-2xl h-full'>
       <h1 className='text-xl text-center sm:text-4xl mt-4 sm:mt-6'>
         Тренировки с Анжелой Андерсон
       </h1>
