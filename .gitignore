@@ -3,5 +3,8 @@ node_modules
 
 .next
 
+# Build directory
+out
+
 # Hidden for privacy reasons
 public/first.jpeg
