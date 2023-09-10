@@ -13,7 +13,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (user) {
-      const userNumber = user.email.split('@')[0];
+      const userNumber = user.uid;
       const userRef = ref(database, `users/${userNumber}`);
 
       return onValue(userRef, (snapshot) => {
