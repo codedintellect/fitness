@@ -1,16 +1,19 @@
 'use client'
 
-import { auth, logout, database } from '../firebase'
+import { logout, database } from '../firebase'
 import { ref, onValue } from "firebase/database";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+
+import { UserContext } from '../layout';
 
 export default function Profile() {
+  const user = useContext(UserContext);
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    if (auth.currentUser) {
-      const userNumber = auth.currentUser.email.split('@')[0];
+    if (user) {
+      const userNumber = user.email.split('@')[0];
       const userRef = ref(database, `users/${userNumber}`);
 
       return onValue(userRef, (snapshot) => {

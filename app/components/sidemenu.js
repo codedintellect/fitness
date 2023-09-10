@@ -2,8 +2,12 @@ import Link from 'next/link'
 import Image from 'next/image';
 
 import { usePathname } from 'next/navigation';
+import { useContext } from 'react';
 
-export default function SideMenu({sideMenu, toggleMenu, user}) {
+import { UserContext } from '../layout';
+
+export default function SideMenu({sideMenu, toggleMenu}) {
+  const user = useContext(UserContext);
   const options = [
     {
       name: 'О тренере Анжеле',
