@@ -41,5 +41,3 @@ export function logout() {
 
 
 export const database = getDatabase(app);
-
-export const phoneRef = ref(database, 'contact');
