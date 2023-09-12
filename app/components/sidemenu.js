@@ -63,7 +63,6 @@ export default function SideMenu({sideMenu, toggleMenu}) {
 
   function PageSelector({item}) {
     let color = "bg-primary";
-    console.log(usePathname());
     if (usePathname() == item.path) {
       color = "bg-selection";
     }
