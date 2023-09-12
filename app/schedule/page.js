@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react'
 
 import { database } from '../firebase'
-import { ref, onValue, get, push, update, remove } from "firebase/database";
+import { ref, onValue, get, push, update, remove, query, orderByChild } from "firebase/database";
 
 import { UserContext } from '../layout';
 import getActivePass from '../components/activepass';
@@ -59,7 +59,7 @@ export default function Schedule() {
         if (day.getTime() + (t["start"] % 86400000) != t["start"]) continue;
         scheduleForDay[id] = t;
       }
-      result.push(<Day day={new Date(year, month, i + 1)} sessions={scheduleForDay}/>);
+      result.push(<Day key={`t${day.getTime()}`} day={new Date(year, month, i + 1)} sessions={scheduleForDay}/>);
     }
 
     return (result)
@@ -128,7 +128,7 @@ function Session({sessionId}) {
   const session = sessions[sessionId];
   const startTime = new Date(session["start"]).toLocaleString('ru-ru', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
   const endTime = new Date(session["end"]).toLocaleString('ru-ru', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
-  const attending = sessions[sessionId]["attendees"] ? Object.values(sessions[sessionId]["attendees"]).includes(user.uid) : false;
+  const attending = sessions[sessionId]["attendees"] ? sessions[sessionId]["attendees"].hasOwnProperty(user.uid) : false;
   return (
     <div className='flex gap-2'>
       <div className='flex flex-wrap sm:flex-nowrap gap-x-3 basis-full pt-1 whitespace-nowrap'>
@@ -156,7 +156,7 @@ async function Attend(sessionId) {
 
   const updates = {};
   updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = sessionId;
-  updates[`sessions/${sessionId}/attendees/${visitId}`] = user.uid;
+  updates[`sessions/${sessionId}/attendees/${user.uid}`] = visitId;
 
   return update(ref(database), updates);
 }
@@ -175,18 +175,17 @@ async function Cancel(sessionId) {
     console.error(error);
     return;
   }
-
-  const attendees = sessions[sessionId]["attendees"];
-  const visitId = Object.keys(attendees).find((key) => (attendees[key] == user.uid));
+  const visitId = sessions[sessionId]["attendees"][user.uid];
 
   const usedPasses = Object.keys(passes)
     .filter((key) => (passes[key]["sessions"]))
 
-  const activePass = usedPasses.find((key) => (Object.keys(passes[key]["sessions"]).includes(visitId)));
+  const activePass = usedPasses
+    .find((key) => (Object.keys(passes[key]["sessions"]).includes(visitId)));
 
   const updates = {};
   updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = null;
-  updates[`sessions/${sessionId}/attendees/${visitId}`] = null;
+  updates[`sessions/${sessionId}/attendees/${user.uid}`] = null;
 
   return update(ref(database), updates);
 }

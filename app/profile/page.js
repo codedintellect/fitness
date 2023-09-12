@@ -35,6 +35,7 @@ export default function Profile() {
         {userData['name']}
       </p>
       <ActivePassDisplay userData={userData} activePass={activePass} />
+      <VisitHistory />
       <PurchaseHistory userData={userData} />
       <button className='w-fit text-2xl bg-red-400 px-2 mx-auto my-2 border-2 border-black rounded-lg' onClick={logout}>
         выйти
@@ -68,7 +69,7 @@ function ActivePassDisplay({userData, activePass}) {
         Действующий абонемент:
       </span>
       <span className='font-bold basis-full text-center'>
-        « {activePassData['title']} »
+        {activePassData['title']}
       </span>
       <span className='text-gray-700'>
         Годен до: 
@@ -86,10 +87,21 @@ function ActivePassDisplay({userData, activePass}) {
   )
 }
 
+function VisitHistory() {
+  return (
+    <div className='bg-white border-2 border-black rounded-xl p-2 flex flex-row flex-wrap gap-x-2 items-center text-lg'>
+      <span className='text-gray-700 basis-full'>
+        История записей:
+      </span>
+    </div>
+  )
+}
+
 function PurchaseHistory({userData}) {
   if (typeof(userData) != 'object' || !userData.hasOwnProperty('passes')) return;
 
-  let purchases = Object.values(userData['passes']).sort((a, b) => (b['purchasedOn'] - a['purchasedOn']));
+  let passes = userData['passes']
+  let purchases = Object.keys(passes).sort((a, b) => (passes[b]['purchasedOn'] - passes[a]['purchasedOn']));
 
   function passStatus(data) {
     if (data.hasOwnProperty('sessions') && Object.keys(data['sessions']).length == data['amount']) {
@@ -122,14 +134,14 @@ function PurchaseHistory({userData}) {
       </span>
       <div className='flex flex-col w-full divide-y divide-black'>
         {purchases.map((x) => (
-          <div className='flex flex-wrap gap-x-2 pt-1'>
+          <div key={x} className='flex flex-wrap gap-x-2 pt-1'>
             <span className='w-20 max-sm:grow'>
-              {new Date(x['purchasedOn']).toLocaleDateString('ru-ru', {day:'2-digit', month:'2-digit', year:'numeric', timeZone: 'UTC'})}
+              {new Date(passes[x]['purchasedOn']).toLocaleDateString('ru-ru', {day:'2-digit', month:'2-digit', year:'numeric', timeZone: 'UTC'})}
             </span>
             <span className='font-bold grow max-sm:basis-full max-sm:order-first max-sm:text-center'>
-              {x['title']}
+              {passes[x]['title']}
             </span>
-            {passStatus(x)}
+            {passStatus(passes[x])}
           </div>
         ))}
       </div>
