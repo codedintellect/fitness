@@ -14,15 +14,15 @@ export default function SideMenu({sideMenu, toggleMenu}) {
     },
     {
       name: 'Запись на тренировки',
-      path: '/schedule'
+      path: '/schedule/'
     },
     {
       name: 'Адрес зала',
-      path: '/location'
+      path: '/location/'
     },
     {
       name: 'Цены',
-      path: '/prices'
+      path: '/prices/'
     }
   ]
   return (
@@ -46,8 +46,8 @@ export default function SideMenu({sideMenu, toggleMenu}) {
             }
           </div>
           <div className='flex flex-col gap-1 px-2 text-center z-[1]'>
-            {user==null && <PageSelector item={{name: 'Авторизоваться', path: '/auth'}} key={999} />}
-            {user!=null && <PageSelector item={{name: 'Профиль', path: '/profile'}} key={999} />}
+            {user==null && <PageSelector item={{name: 'Авторизоваться', path: '/auth/'}} key={999} />}
+            {user!=null && <PageSelector item={{name: 'Профиль', path: '/profile/'}} key={999} />}
           </div>
           <span className='text-2xl text-center font-medium z-[1]'>
             @sanchos.fit
@@ -63,6 +63,7 @@ export default function SideMenu({sideMenu, toggleMenu}) {
 
   function PageSelector({item}) {
     let color = "bg-primary";
+    console.log(usePathname());
     if (usePathname() == item.path) {
       color = "bg-selection";
     }
