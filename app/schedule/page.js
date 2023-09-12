@@ -6,6 +6,7 @@ import { database } from '../firebase'
 import { ref, onValue, get, push, update, remove } from "firebase/database";
 
 import { UserContext } from '../layout';
+import getActivePass from '../components/activepass';
 
 var user = null;
 var sessions = null;
@@ -148,27 +149,8 @@ function Session({sessionId}) {
 }
 
 async function Attend(sessionId) {
-  let passes = null;
-  try {
-    const snapshot = await get(ref(database, `users/${user.uid}/passes`));
-    if (!snapshot.exists()) {
-      console.warn("No passes found");
-      return;
-    }
-    passes = snapshot.val();
-  }
-  catch(error){
-    console.error(error);
-    return;
-  }
-
-  const validPasses = Object.keys(passes)
-    .filter((key) => (passes[key]["private"] == false))
-    .filter((key) => (passes[key]["expiresOn"] > new Date().getTime()))
-    .filter((key) => (passes[key]["sessions"] == undefined || passes[key]["sessions"].length < passes[key]["amount"]));
-  
-  validPasses.sort((a, b) => passes[a]["expiresOn"] - passes[b]["expiresOn"]);
-  const activePass = validPasses[0];
+  const activePass = await getActivePass(user.uid);
+  if (!activePass) return;
 
   const visitId = push(ref(database, `sessions/${sessionId}/attendees/`)).key;
 
@@ -193,8 +175,6 @@ async function Cancel(sessionId) {
     console.error(error);
     return;
   }
-
-  console.log(sessions, sessionId);
 
   const attendees = sessions[sessionId]["attendees"];
   const visitId = Object.keys(attendees).find((key) => (attendees[key] == user.uid));
