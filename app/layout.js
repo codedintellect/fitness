@@ -42,11 +42,11 @@ export default function RootLayout({ children }) {
 }
 
 function Transition({user}) {
-  if (user != null && usePathname() == '/auth') {
-    return redirect('/schedule');
+  if (user != null && usePathname() == '/auth/') {
+    return redirect('/schedule/');
   }
-  else if (user == null && usePathname() == '/profile') {
-    return redirect('/auth');
+  else if (user == null && usePathname() == '/profile/') {
+    return redirect('/auth/');
   }
   return <></>;
 }
