@@ -2,7 +2,10 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className='flex flex-col text-left mx-4 mb-10 sm:mx-auto sm:max-w-2xl'>
+    <main className='flex flex-col text-left px-4 mb-10 mx-auto sm:max-w-2xl'>
+      <span className='invisible text-4xl md:hidden'>
+        PADDING
+      </span>
       <div className='border-2 border-black rounded-3xl text-center my-4 overflow-hidden'>
         <Image
           src='/first.jpeg'
