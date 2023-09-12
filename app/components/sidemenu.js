@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image';
 
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
@@ -31,12 +30,7 @@ export default function SideMenu({sideMenu, toggleMenu}) {
       <div style={{maxWidth: `${sideMenu * 768}px`}} className='fixed h-full border-r-2 border-black overflow-hidden transition-all duration-300'>
         <div className='relative h-full w-fit flex flex-col gap-2 bg-fallback whitespace-nowrap'>
           <div className='absolute bottom-0 opacity-50'>
-            <Image
-              src='/sidebg.png'
-              width={829}
-              height={1600}
-              alt='Picture of the author'
-            />
+            <img src='/sidebg.jpg' />
             <div className='absolute top-0 w-full h-20 bg-gradient-to-b from-fallback to-transparent'></div>
           </div>
           <span className='w-full text-4xl text-center font-bold mt-3'>

@@ -77,7 +77,7 @@ async function getVisitHistory(uid, callback) {
 function ActivePassDisplay({userData, activePass}) {
   if (!activePass) {
     return (
-      <div className='relative bg-white border-2 border-black rounded-xl p-2 flex flex-row flex-wrap gap-x-2 items-center text-lg overflow-hidden'>
+      <div className='relative bg-white border-2 border-black rounded-xl p-2 flex flex-row gap-x-2 items-center text-lg overflow-hidden'>
         <span className='text-gray-700'>
           Действующий абонемент:
         </span>

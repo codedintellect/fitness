@@ -6,6 +6,3 @@ node_modules
 
 # Build directory
 out
-
-# Hidden for privacy reasons
-public/first.jpeg

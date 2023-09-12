@@ -17,6 +17,7 @@ export default function Schedule() {
   sessions = s;
 
   useEffect(() => {
+    scrollToToday();
     const dataRef = ref(database, 'sessions');
 
     return onValue(dataRef, (snapshot) => {
@@ -65,6 +66,22 @@ export default function Schedule() {
     return (result)
   }
 
+  function scrollToToday() {
+    let calendar = document.getElementById('calendar');
+
+    if (!calendar) return;
+
+    if (selectedMonth == new Date().getUTCMonth()) {
+      const dayId = new Date().getDate();
+      const today = document.querySelector(`#calendar :nth-child(${dayId})`);
+      calendar.scrollTo(0, today.offsetTop);
+    }
+    else {
+      calendar.scrollTo(0, 0);
+      return;
+    }
+  }
+
   return (
     <main className='relative flex flex-col text-left mx-auto max-w-2xl h-full'>
       <h1 className='text-xl text-center sm:text-4xl mt-4 sm:mt-6'>
@@ -81,7 +98,7 @@ export default function Schedule() {
           </button>
         </p>
       </div>
-      <div className='overflow-scroll grow'>
+      <div id='calendar' className='relative snap-y overflow-scroll grow'>
         {generateCalendar(selectedMonth)}
       </div>
     </main>
@@ -101,7 +118,7 @@ function Day({day, sessions}) {
   }
 
   return (
-    <div className={`${bgColor} relative p-1 m-2 border-2 border-black rounded-lg`}>
+    <div className={`${bgColor} relative snap-start p-1 m-2 border-2 border-black rounded-lg`}>
       <div className='w-full'>
         <span className='pr-4 font-bold'>
           {day.toLocaleString('ru-ru', {day: '2-digit', month: '2-digit'})}
