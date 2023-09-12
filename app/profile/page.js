@@ -1,7 +1,7 @@
 'use client'
 
 import { logout, database } from '../firebase'
-import { ref, onValue } from "firebase/database";
+import { ref, get, onValue, query, orderByChild, startAfter } from "firebase/database";
 
 import { useState, useEffect, useContext } from 'react'
 
@@ -13,6 +13,7 @@ export default function Profile() {
   const user = useContext(UserContext);
   const [userData, setUserData] = useState({});
   const [activePass, setActivePass] = useState('');
+  const [visitHistory, setVisitHistory] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -22,12 +23,13 @@ export default function Profile() {
       return onValue(userRef, (snapshot) => {
         setUserData(snapshot.val());
         getActivePass(user.uid).then((x) => setActivePass(x));
+        getVisitHistory(user.uid, setVisitHistory);
       });
     }
   }, []);
 
   return (
-    <main className='relative flex flex-col gap-y-3 justify-items-center basis-full text-left px-2 sm:mx-auto sm:max-w-2xl'>
+    <main className='relative flex flex-col gap-y-3 justify-items-center text-left px-2 sm:mx-auto sm:max-w-2xl'>
       <span className='text-4xl text-center mt-4 sm:mt-6'>
         ПРОФИЛЬ
       </span>
@@ -35,13 +37,41 @@ export default function Profile() {
         {userData['name']}
       </p>
       <ActivePassDisplay userData={userData} activePass={activePass} />
-      <VisitHistory />
+      <VisitHistory visitHistory={visitHistory} />
       <PurchaseHistory userData={userData} />
       <button className='w-fit text-2xl bg-red-400 px-2 mx-auto my-2 border-2 border-black rounded-lg' onClick={logout}>
         выйти
       </button>
     </main>
   )
+}
+
+async function getVisitHistory(uid, callback) {
+  let sessions = null;
+  try {
+    const lastMonth = new Date().setMonth(new Date().getMonth() - 1);
+    const q = query(ref(database, 'sessions'), orderByChild('start'), startAfter(lastMonth));
+    const snapshot = await get(q);
+    if (!snapshot.exists()) {
+      console.warn("No passes found");
+      return null;
+    }
+    sessions = snapshot.val();
+  }
+  catch(error) {
+    console.error(error);
+    return null;
+  }
+
+  const attended = Object.keys(sessions)
+    .filter((key) => (sessions[key].hasOwnProperty('attendees')))
+    .filter((key) => (sessions[key]['attendees'].hasOwnProperty(uid)))
+    .reduce( (res, key) => (res[key] = sessions[key], res), {} );
+  
+  //validPasses.sort((a, b) => passes[a]["expiresOn"] - passes[b]["expiresOn"]);
+
+  callback(attended);
+  return null;
 }
 
 function ActivePassDisplay({userData, activePass}) {
@@ -87,12 +117,34 @@ function ActivePassDisplay({userData, activePass}) {
   )
 }
 
-function VisitHistory() {
+function VisitHistory({visitHistory}) {
+  if (Object.keys(visitHistory).length == 0) return null;
+
   return (
     <div className='bg-white border-2 border-black rounded-xl p-2 flex flex-row flex-wrap gap-x-2 items-center text-lg'>
       <span className='text-gray-700 basis-full'>
         История записей:
       </span>
+      <div className='flex flex-col w-full divide-y divide-black'>
+        {Object.keys(visitHistory).map((x) => (
+          <div key={x} className='flex flex-wrap gap-x-2 pt-1'>
+            <span className='max-sm:grow max-sm:flex-1'>
+              {new Date(visitHistory[x]['start']).toLocaleDateString('ru-ru', {day:'2-digit', month:'2-digit', year:'numeric', timeZone: 'UTC'})}
+            </span>
+            <span className='max-sm:grow max-sm:text-center max-sm:flex-1'>
+              {new Date(visitHistory[x]['start']).toLocaleTimeString('ru-ru', {hour:'2-digit', minute:'2-digit', timeZone: 'UTC'})} - {new Date(visitHistory[x]['end']).toLocaleTimeString('ru-ru', {hour:'2-digit', minute:'2-digit', timeZone: 'UTC'})}
+            </span>
+            <span className='font-bold grow max-sm:basis-full max-sm:order-first max-sm:text-center'>
+              {visitHistory[x]['title']}
+            </span>
+            <div className='max-sm:grow max-sm:flex-1'>
+              <button className={`float-right px-2 ${new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start'] ? 'bg-gray-200 text-fallback' : 'bg-red-400'} rounded-md`} disabled={new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start']}>
+                отмена
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
