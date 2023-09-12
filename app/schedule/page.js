@@ -1,18 +1,25 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 
 import { database } from '../firebase'
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, get, push, update, remove } from "firebase/database";
+
+import { UserContext } from '../layout';
+
+var user = null;
+var sessions = null;
 
 export default function Schedule() {
-  const [timeslots, setTimeslots] = useState([]);
+  user = useContext(UserContext);
+  const [s, setSessions] = useState([]);
+  sessions = s;
 
   useEffect(() => {
-    const dataRef = ref(database, 'schedule');
+    const dataRef = ref(database, 'sessions');
 
     return onValue(dataRef, (snapshot) => {
-      setTimeslots(snapshot.val());
+      setSessions(snapshot.val());
     });
   }, []);
 
@@ -36,7 +43,7 @@ export default function Schedule() {
     return null;
   }
 
-  function generateCalendar(month, timeslots) {
+  function generateCalendar(month) {
     let today = new Date();
     let year = today.getFullYear() + (month < today.getMonth() ? 1 : 0);
     let daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -45,15 +52,13 @@ export default function Schedule() {
 
     for (var i = 0; i < daysInMonth; i++) {
       let day = new Date(Date.UTC(year, month, i+1));
-      let sessions = {}
-      for (var id in timeslots) {
-        const t = timeslots[id];
-        if (day.getTime() + (t["start"] % 86400000) < t["start"]) continue;
-        if (day.getTime() + (t["end"] % 86400000) > t["end"]) continue;
-        if (day.getUTCDay() != new Date(t["start"]).getUTCDay()) continue;
-        sessions[id] = t;
+      let scheduleForDay = {}
+      for (var id in sessions) {
+        const t = sessions[id];
+        if (day.getTime() + (t["start"] % 86400000) != t["start"]) continue;
+        scheduleForDay[id] = t;
       }
-      result.push(<Day day={new Date(year, month, i + 1)} sessions={sessions}/>);
+      result.push(<Day day={new Date(year, month, i + 1)} sessions={scheduleForDay}/>);
     }
 
     return (result)
@@ -76,7 +81,7 @@ export default function Schedule() {
         </p>
       </div>
       <div className='overflow-scroll grow'>
-        {generateCalendar(selectedMonth, timeslots)}
+        {generateCalendar(selectedMonth)}
       </div>
     </main>
   )
@@ -111,16 +116,18 @@ function Day({day, sessions}) {
       </div>
       <div className='flex flex-col text-white text-xl divide-y divide-white'>
         {Object.keys(sessions).map((key) => (
-          <Session key={key} session={sessions[key]} />
+          <Session key={key} sessionId={key} />
         ))}
       </div>
     </div>
   )
 }
 
-function Session({session}) {
+function Session({sessionId}) {
+  const session = sessions[sessionId];
   const startTime = new Date(session["start"]).toLocaleString('ru-ru', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
   const endTime = new Date(session["end"]).toLocaleString('ru-ru', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
+  const attending = sessions[sessionId]["attendees"] ? Object.values(sessions[sessionId]["attendees"]).includes(user.uid) : false;
   return (
     <div className='flex gap-2'>
       <div className='flex flex-wrap sm:flex-nowrap gap-x-3 basis-full pt-1 whitespace-nowrap'>
@@ -131,11 +138,75 @@ function Session({session}) {
           {session["title"]}
         </span>
         <span className='order-3'>
-          0 / {session["slots"]}
+          {session["attendees"] ? Object.values(session["attendees"]).length : 0} / {session["slots"]}
         </span>
       </div>
-      <input className='bg-white text-black font-bold px-2 my-auto rounded-lg' type='button' value='ЗАПИСАТЬСЯ' />
-      <input className='hidden bg-red-400 text-black font-bold px-2 my-auto rounded-lg' type='button' value='ОТМЕНИТЬ' />
+      <input className={`${attending && 'hidden'} bg-white text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ЗАПИСАТЬСЯ' onClick={()=>(Attend(sessionId))}/>
+      <input className={`${!attending && 'hidden'} bg-red-400 text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ОТМЕНИТЬ' onClick={()=>(Cancel(sessionId))}/>
     </div>
   )
+}
+
+async function Attend(sessionId) {
+  let passes = null;
+  try {
+    const snapshot = await get(ref(database, `users/${user.uid}/passes`));
+    if (!snapshot.exists()) {
+      console.warn("No passes found");
+      return;
+    }
+    passes = snapshot.val();
+  }
+  catch(error){
+    console.error(error);
+    return;
+  }
+
+  const validPasses = Object.keys(passes)
+    .filter((key) => (passes[key]["private"] == false))
+    .filter((key) => (passes[key]["expiresOn"] > new Date().getTime()))
+    .filter((key) => (passes[key]["sessions"] == undefined || passes[key]["sessions"].length < passes[key]["amount"]));
+  
+  validPasses.sort((a, b) => passes[a]["expiresOn"] - passes[b]["expiresOn"]);
+  const activePass = validPasses[0];
+
+  const visitId = push(ref(database, `sessions/${sessionId}/attendees/`)).key;
+
+  const updates = {};
+  updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = sessionId;
+  updates[`sessions/${sessionId}/attendees/${visitId}`] = user.uid;
+
+  return update(ref(database), updates);
+}
+
+async function Cancel(sessionId) {
+  let passes = null;
+  try {
+    const snapshot = await get(ref(database, `users/${user.uid}/passes`));
+    if (!snapshot.exists()) {
+      console.warn("No passes found");
+      return;
+    }
+    passes = snapshot.val();
+  }
+  catch(error){
+    console.error(error);
+    return;
+  }
+
+  console.log(sessions, sessionId);
+
+  const attendees = sessions[sessionId]["attendees"];
+  const visitId = Object.keys(attendees).find((key) => (attendees[key] == user.uid));
+
+  const usedPasses = Object.keys(passes)
+    .filter((key) => (passes[key]["sessions"]))
+
+  const activePass = usedPasses.find((key) => (Object.keys(passes[key]["sessions"]).includes(visitId)));
+
+  const updates = {};
+  updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = null;
+  updates[`sessions/${sessionId}/attendees/${visitId}`] = null;
+
+  return update(ref(database), updates);
 }
