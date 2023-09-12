@@ -25,7 +25,7 @@ export default function SideMenu({sideMenu, toggleMenu}) {
       path: '/prices/'
     },
     {
-      name: 'Вопросы и Пожелания',
+      name: 'Вопросы',
       path: '/questions/'
     }
   ]
@@ -58,7 +58,7 @@ export default function SideMenu({sideMenu, toggleMenu}) {
           </span>
         </div>
       </div>
-      <div className={`fixed inset-0 backdrop-blur-sm bg-black/10 z-[-1] ${sideMenu ? 'opacity-100 visible' : 'opacity-0 invisible'} transition-all duration-300 xl:hidden`}></div>
+      <div className={`fixed inset-0 backdrop-blur-sm bg-black/10 z-[-1] ${sideMenu ? 'opacity-100 visible' : 'opacity-0 invisible'} transition-all duration-300 xl:hidden`} onClick={toggleMenu}></div>
       <button className='fixed m-2' onClick={toggleMenu}>
         <i className='bi bi-list text-4xl'></i>
       </button>
