@@ -132,13 +132,13 @@ function Session({sessionId}) {
   return (
     <div className='flex gap-2'>
       <div className='flex flex-wrap sm:flex-nowrap gap-x-3 basis-full pt-1 whitespace-nowrap'>
-        <span className='order-2 sm:order-1'>
+        <span>
           {startTime} - {endTime}
         </span>
-        <span className='font-bold basis-full order-1'>
+        <span className='font-bold basis-full max-sm:order-first'>
           {session["title"]}
         </span>
-        <span className='order-3'>
+        <span>
           {session["attendees"] ? Object.values(session["attendees"]).length : 0} / {session["slots"]}
         </span>
       </div>
