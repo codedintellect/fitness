@@ -1,10 +1,11 @@
-import { ref, get } from 'firebase/database'
+import { ref, get, query, startAfter, orderByChild } from 'firebase/database'
 import { database } from '../firebase';
 
 export default async function getActivePass(uid) {
   let passes = null;
   try {
-    const snapshot = await get(ref(database, `users/${uid}/passes`));
+    const q = query(ref(database, `users/${uid}/passes`), orderByChild('expiresOn'), startAfter(new Date().getTime()));
+    const snapshot = await get(q);
     if (!snapshot.exists()) {
       console.warn("No passes found");
       return null;
@@ -18,7 +19,6 @@ export default async function getActivePass(uid) {
 
   const validPasses = Object.keys(passes)
     .filter((key) => (passes[key]["private"] == false))
-    .filter((key) => (passes[key]["expiresOn"] > new Date().getTime()))
     .filter((key) => (passes[key]["sessions"] == undefined || Object.keys(passes[key]["sessions"]).length < passes[key]["amount"]));
   
   validPasses.sort((a, b) => passes[a]["expiresOn"] - passes[b]["expiresOn"]);
