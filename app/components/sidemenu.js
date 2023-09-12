@@ -23,6 +23,10 @@ export default function SideMenu({sideMenu, toggleMenu}) {
     {
       name: 'Цены',
       path: '/prices/'
+    },
+    {
+      name: 'Вопросы и Пожелания',
+      path: '/questions/'
     }
   ]
   return (
