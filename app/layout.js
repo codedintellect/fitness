@@ -4,11 +4,10 @@ import './globals.css'
 import { Neucha, Marck_Script } from 'next/font/google'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
-import { redirect, usePathname } from 'next/navigation';
 import { useState, useEffect, createContext } from 'react'
 
-import { auth } from './firebase'
-import { onAuthStateChanged } from "firebase/auth";
+import { app } from './firebase'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import SideMenu from './components/sidemenu';
 
@@ -21,9 +20,9 @@ export default function RootLayout({ children }) {
   const [sideMenu, setMenu] = useState(false);
   function toggleMenu() { setMenu(!sideMenu) };
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(getAuth(app).currentUser);
   useEffect(() => {
-    return onAuthStateChanged(auth, (u) => {
+    return onAuthStateChanged(getAuth(app), (u) => {
       setUser(u);
     });
   }, []);
@@ -38,18 +37,7 @@ export default function RootLayout({ children }) {
           <SideMenu sideMenu={sideMenu} toggleMenu={toggleMenu} user={user} />
           {children}
         </UserContext.Provider>
-        <Transition user={user} />
       </body>
     </html>
   )
-}
-
-function Transition({user}) {
-  if (user != null && usePathname() == '/auth/') {
-    return redirect('/schedule/');
-  }
-  else if (user == null && usePathname() == '/profile/') {
-    return redirect('/auth/');
-  }
-  return <></>;
 }

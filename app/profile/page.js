@@ -1,13 +1,19 @@
 'use client'
 
-import { logout, database } from '../firebase'
-import { ref, get, onValue, query, orderByChild, startAfter } from "firebase/database";
+import { Cancel } from '../schedule/page'
+
+import { app } from '../firebase'
+import { getDatabase, ref, get, onValue, query, orderByChild, startAfter } from "firebase/database";
+import { getAuth, signOut } from 'firebase/auth';
 
 import { useState, useEffect, useContext } from 'react'
 
 import { UserContext } from '../layout';
 import getActivePass from '../components/activepass';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'
+
+const db = getDatabase(app);
 
 export default function Profile() {
   const user = useContext(UserContext);
@@ -15,10 +21,12 @@ export default function Profile() {
   const [activePass, setActivePass] = useState('');
   const [visitHistory, setVisitHistory] = useState({});
 
+  const router = useRouter();
+
   useEffect(() => {
     if (user) {
       const userNumber = user.uid;
-      const userRef = ref(database, `users/${userNumber}`);
+      const userRef = ref(db, `users/${userNumber}`);
 
       return onValue(userRef, (snapshot) => {
         setUserData(snapshot.val());
@@ -26,7 +34,7 @@ export default function Profile() {
         getVisitHistory(user.uid, setVisitHistory);
       });
     }
-  }, []);
+  }, [user]);
 
   return (
     <main className='relative flex flex-col gap-y-3 justify-items-center text-left px-2 sm:mx-auto sm:max-w-2xl'>
@@ -37,9 +45,9 @@ export default function Profile() {
         {userData['name']}
       </p>
       <ActivePassDisplay userData={userData} activePass={activePass} />
-      <VisitHistory visitHistory={visitHistory} />
+      <VisitHistory visitHistory={visitHistory} user={user} />
       <PurchaseHistory userData={userData} />
-      <button className='w-fit text-2xl bg-red-400 px-2 mx-auto my-2 border-2 border-black rounded-lg' onClick={logout}>
+      <button className='w-fit text-2xl bg-red-400 px-2 mx-auto my-2 border-2 border-black rounded-lg' onClick={()=>logout(router)}>
         выйти
       </button>
     </main>
@@ -50,7 +58,7 @@ async function getVisitHistory(uid, callback) {
   let sessions = null;
   try {
     const lastMonth = new Date().setMonth(new Date().getMonth() - 1);
-    const q = query(ref(database, 'sessions'), orderByChild('start'), startAfter(lastMonth));
+    const q = query(ref(db, 'sessions'), orderByChild('start'), startAfter(lastMonth));
     const snapshot = await get(q);
     if (!snapshot.exists()) {
       console.warn("No passes found");
@@ -117,7 +125,7 @@ function ActivePassDisplay({userData, activePass}) {
   )
 }
 
-function VisitHistory({visitHistory}) {
+function VisitHistory({visitHistory, user}) {
   if (Object.keys(visitHistory).length == 0) return null;
 
   return (
@@ -138,7 +146,7 @@ function VisitHistory({visitHistory}) {
               {visitHistory[x]['title']}
             </span>
             <div className='max-sm:grow max-sm:flex-1'>
-              <button className={`float-right px-2 ${new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start'] ? 'bg-gray-200 text-fallback' : 'bg-red-400'} rounded-md`} disabled={new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start']}>
+              <button className={`float-right px-2 ${new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start'] ? 'bg-gray-200 text-fallback' : 'bg-red-400'} rounded-md`} disabled={new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start']} onClick={() => Cancel(x, user, visitHistory)}>
                 отмена
               </button>
             </div>
@@ -199,4 +207,14 @@ function PurchaseHistory({userData}) {
       </div>
     </div>
   )
+}
+
+function logout(router) {
+  console.log("run");
+  signOut(getAuth(app)).then(()=>{
+    console.log("test");
+    router.push('/auth/');
+  }).catch((error)=>{
+    console.error(error);
+  })
 }

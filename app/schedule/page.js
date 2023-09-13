@@ -1,12 +1,16 @@
 'use client'
 
 import { useState, useEffect, useContext } from 'react'
+import { useRouter } from 'next/navigation';
 
-import { database } from '../firebase'
-import { ref, onValue, get, push, update, remove, query, orderByChild } from "firebase/database";
+import { app } from '../firebase'
+import { getDatabase, ref, onValue, get, push, update, remove, query, orderByChild } from "firebase/database";
 
 import { UserContext } from '../layout';
 import getActivePass from '../components/activepass';
+
+const db = getDatabase(app);
+var router = null;
 
 var user = null;
 var sessions = null;
@@ -16,12 +20,16 @@ export default function Schedule() {
   const [s, setSessions] = useState([]);
   sessions = s;
 
+  router = useRouter();
+
   useEffect(() => {
     scrollToToday();
-    const dataRef = ref(database, 'sessions');
+    const dataRef = ref(db, 'sessions');
+    const q = query(dataRef, orderByChild('start'));
 
-    return onValue(dataRef, (snapshot) => {
+    return onValue(q, (snapshot) => {
       setSessions(snapshot.val());
+      console.log(q);
     });
   }, []);
 
@@ -166,22 +174,31 @@ function Session({sessionId}) {
 }
 
 async function Attend(sessionId) {
+  if (!user) {
+    router.push('/auth/');
+    return;
+  }
   const activePass = await getActivePass(user.uid);
-  if (!activePass) return;
+  if (!activePass) {
+    router.push('/prices/');
+    return;
+  }
 
-  const visitId = push(ref(database, `sessions/${sessionId}/attendees/`)).key;
+  const visitId = push(ref(db, `sessions/${sessionId}/attendees/`)).key;
 
   const updates = {};
   updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = sessionId;
   updates[`sessions/${sessionId}/attendees/${user.uid}`] = visitId;
 
-  return update(ref(database), updates);
+  return update(ref(db), updates);
 }
 
-async function Cancel(sessionId) {
+export async function Cancel(sessionId, u, s) {
+  u = u || user;
+  s = s || sessions;
   let passes = null;
   try {
-    const snapshot = await get(ref(database, `users/${user.uid}/passes`));
+    const snapshot = await get(ref(db, `users/${u.uid}/passes`));
     if (!snapshot.exists()) {
       console.warn("No passes found");
       return;
@@ -192,7 +209,7 @@ async function Cancel(sessionId) {
     console.error(error);
     return;
   }
-  const visitId = sessions[sessionId]["attendees"][user.uid];
+  const visitId = s[sessionId]["attendees"][u.uid];
 
   const usedPasses = Object.keys(passes)
     .filter((key) => (passes[key]["sessions"]))
@@ -201,8 +218,8 @@ async function Cancel(sessionId) {
     .find((key) => (Object.keys(passes[key]["sessions"]).includes(visitId)));
 
   const updates = {};
-  updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = null;
-  updates[`sessions/${sessionId}/attendees/${user.uid}`] = null;
+  updates[`users/${u.uid}/passes/${activePass}/sessions/${visitId}`] = null;
+  updates[`sessions/${sessionId}/attendees/${u.uid}`] = null;
 
-  return update(ref(database), updates);
+  return update(ref(db), updates);
 }

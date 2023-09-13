@@ -11,7 +11,7 @@ export default function Questions() {
   ];
 
   return (
-    <main className='flex flex-col justify-items-center basis-full text-left mx-4 mb-10 sm:mx-auto sm:max-w-2xl'>
+    <main className='flex flex-col justify-center justify-items-center basis-full text-left mx-4 h-full sm:mx-auto sm:max-w-2xl'>
       {data.map((x) => (
         <Question q={x['q']} a={x['a']} />
       ))}

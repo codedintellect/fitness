@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from 'react'
 
-import { database } from '../firebase'
-import { ref, onValue } from "firebase/database";
+import { app } from '../firebase'
+import { getDatabase, ref, onValue } from "firebase/database";
+
+const db = getDatabase(app);
 
 export default function Prices() {
   const [listings, setListings] = useState([]);
 
   useEffect(() => {
-    const dataRef = ref(database, 'purchase');
+    const dataRef = ref(db, 'purchase');
 
     return onValue(dataRef, (snapshot) => {
       setListings(snapshot.val());
-      console.log(listings);
     });
   }, []);
 
@@ -52,7 +53,7 @@ function ContactButton({text}) {
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    const phoneRef = ref(database, 'contact');
+    const phoneRef = ref(db, 'contact');
 
     return onValue(phoneRef, (snapshot) => {
       setPhone(snapshot.val());

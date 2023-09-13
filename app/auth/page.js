@@ -1,25 +1,105 @@
 'use client'
 
-import { login } from '../firebase'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { app } from '../firebase'
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, set } from 'firebase/database';
+
+const db = getDatabase(app);
 
 export default function Auth() {
+  const [isLogin, setType] = useState(false);
+
+  const router = useRouter();
+
   return (
-    <main className='relative flex flex-col justify-center h-full sm:mx-auto sm:max-w-2xl'>
-      <span className='text-4xl text-center'>
-        Авторизоваться
-      </span>
-      <div className='flex flex-col gap-2 mx-6 sm:mx-auto my-6 sm:w-96'>
-        <input id='phonenumber' className='w-full text-xl text-center p-1 border-2 border-black rounded-lg' />
-        <input id='password' className='w-full text-xl text-center p-1 border-2 border-black rounded-lg' type='password' />
-        <input className='w-fit text-xl text-center px-4 py-1 mx-auto bg-white border-2 border-black rounded-lg' type='button' value='войти' onClick={submit} />
+    <main className='w-full h-full flex flex-col justify-center px-4'>
+      <div className='flex flex-wrap gap-2 border-2 border-selection w-full max-w-sm p-2 mx-auto rounded-3xl'>
+        <div className='relative basis-full flex bg-gray-300 rounded-t-2xl rounded-b-lg border-2 border-black overflow-hidden'>
+          <div className={`absolute w-1/2 h-full bg-white transition-all ${isLogin ? 'left-1/2' : 'left-0'}`}></div>
+          <input className='relative basis-1/2 text-xl text-center font-bold p-1' type='button' value='РЕГИСТРАЦИЯ' onClick={()=>setType(false)} />
+          <input className='relative basis-1/2 text-xl text-center font-bold p-1' type='button' value='ВХОД' onClick={()=>setType(true)} />
+        </div>
+        <Field hint='имя' id='firstname' c={`basis-1/3 grow transition-all ${isLogin ? 'max-h-0 border-0' : 'max-h-14 border-2'}`} regex='[a-zA-Zа-яА-Я\s.\-]*' />
+        <Field hint='фамилия' id='lastname' c={`basis-1/3 grow transition-all ${isLogin ? 'max-h-0 border-0' : 'max-h-14 border-2'}`} regex='[a-zA-Zа-яА-Я\s.\-]*' />
+        <Field hint='логин' id='username' c='basis-full border-2' regex='[a-zA-Z0-9._\-]*' />
+        <Field hint='пароль' id='password' type='password' c='basis-full border-2' />
+        <button className='bg-white border-2 border-black px-2 py-1 mx-auto rounded-t-lg rounded-b-2xl' onClick={()=>submit(isLogin, router)}>
+          продолжить
+        </button>
       </div>
     </main>
   )
 }
 
-function submit() {
-  let phonenumber = document.getElementById('phonenumber').value;
-  let password = document.getElementById('password').value;
+function Field({hint, type, id, c, regex}) {
+  return (
+    <div className={`flex flex-col bg-white px-2 border-black rounded-2xl overflow-hidden ${c}`}>
+      <snap className='font-bold'>
+        {hint}
+      </snap>
+      <input className='rounded-2xl text-lg text-center' type={type} id={id} pattern={regex} onChange={(e)=>monitorValidity(e)} />
+    </div>
+  )
+}
 
-  login(phonenumber, password);
+function monitorValidity(event) {
+  const element = event.target;
+  const parent = element.parentElement;
+  parent.style.borderColor = element.checkValidity() ? '' : 'rgb(255, 0, 0)';
+}
+
+function submit(isLogin, router) {
+  let firstname = document.getElementById('firstname');
+  let lastname = document.getElementById('lastname');
+  let username = document.getElementById('username');
+  let password = document.getElementById('password');
+
+  if (!isLogin) {
+    if (!firstname.checkValidity()) {
+      console.error("invalid firstname");
+      return null;
+    }
+    if (!lastname.checkValidity()) {
+      console.error("invalid lastname");
+      return null;
+    }
+  }
+  if (!username.checkValidity()) {
+    console.error("invalid username");
+    return null;
+  }
+
+  if (isLogin) {
+    console.log('using existing account');
+    signInWithEmailAndPassword(getAuth(app), `${username.value}@sanchos-fit.web.app`, password.value)
+      .then((userCredential) => {
+        router.push('/profile/');
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(error);
+      });
+  }
+  else {
+    createUserWithEmailAndPassword(getAuth(app), `${username.value}@sanchos-fit.web.app`, password.value)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        set(ref(db, `users/${user.uid}`), {
+          name: `${firstname.value} ${lastname.value}`
+        }).then(() => {
+          router.push('/profile/');
+        }).catch((error) => {
+          console.error(error);
+        })
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(error);
+      });
+  }
 }

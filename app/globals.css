@@ -20,6 +20,10 @@ body {
   user-select: none;
 }
 
+img {
+  pointer-events: none;
+}
+
 h1,
 h2,
 h3,

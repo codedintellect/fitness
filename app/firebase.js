@@ -1,6 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, onValue } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCEFdZhnFDo7a2lwyYgpC09ekCSr5jfb_4",
@@ -13,31 +11,4 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication and get a reference to the service
-export const auth = getAuth(app);
-
-export function login(phone, password) {
-  // Since user creation is handled by the website admin, we wish to avoid
-  // phone number verification, hence the roundabout way of authentication.
-  signInWithEmailAndPassword(auth, `${phone}@example.com`, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
-}
-
-export function logout() {
-  signOut(auth).then(() => {
-    // Sign-out successful.
-  }).catch((error) => {
-    // An error happened.
-  });
-}
-
-
-export const database = getDatabase(app);
+export const app = initializeApp(firebaseConfig);
