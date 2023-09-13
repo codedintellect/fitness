@@ -1,7 +1,7 @@
 'use client'
 
 import { app } from '../firebase'
-import { getDatabase, ref, onValue, get } from "firebase/database";
+import { getDatabase, ref, onValue, query, orderByChild } from "firebase/database";
 
 import { useState, useEffect } from 'react'
 import EditSession from './admin';
@@ -24,7 +24,10 @@ export default function Users() {
     return (
       <div className='flex'>
         <span className='text-xl basis-full'>
-          {data['title']}
+          {new Date(data['start']).toISOString().substring(0,16)}-{new Date(data['end']).toISOString().substring(11,16)} {data['title']}
+        </span>
+        <span className='text-xl whitespace-nowrap'>
+          {data.hasOwnProperty('attendees') ? Object.keys(data['attendees']).length : '0'} / {data['slots']}
         </span>
         <button className='bg-white p-1 rounded-md' onClick={()=>(selectSession(k))}>
           <span className='bi bi-pencil-fill' />
@@ -38,7 +41,7 @@ export default function Users() {
       <span className='text-4xl text-center mt-4 sm:mt-6'>
         ПОЛЬЗОВАТЕЛИ
       </span>
-      {Object.keys(sessions).map((key) => (
+      {Object.keys(sessions).sort((a, b) => sessions[a]['start'] - sessions[b]['start']).map((key) => (
         <Session key={key} k={key} data={sessions[key]} />
       ))}
       <EditSession data={sessions} selectedSession={selectedSession} selectSession={selectSession} />
