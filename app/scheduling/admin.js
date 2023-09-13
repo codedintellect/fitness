@@ -62,16 +62,11 @@ function ModifySession(sessionId) {
   const endTime = document.getElementById('endTime').valueAsDate;
   const slots = document.getElementById('slots').valueAsNumber;
 
-  const payload = {
-    canceled: false,
-    end: date.getTime() + endTime.getTime(),
-    slots: slots,
-    start: date.getTime() + startTime.getTime(),
-    title: title
-  };
-
   const updates = {};
-  updates[`sessions/${sessionId}`] = payload;
+  updates[`sessions/${sessionId}/end`] = date.getTime() + endTime.getTime();
+  updates[`sessions/${sessionId}/slots`] = slots;
+  updates[`sessions/${sessionId}/start`] = date.getTime() + startTime.getTime();
+  updates[`sessions/${sessionId}/title`] = title;
 
   return update(ref(db), updates);
 }
