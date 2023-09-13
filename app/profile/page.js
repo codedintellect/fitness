@@ -20,6 +20,7 @@ export default function Profile() {
   const [userPasses, setUserPasses] = useState({});
   const [activePass, setActivePass] = useState('');
   const [visitHistory, setVisitHistory] = useState({});
+  const [username, setUsername] = useState('');
 
   const router = useRouter();
 
@@ -31,6 +32,7 @@ export default function Profile() {
         setUserPasses(snapshot.val());
         getActivePass(user.uid).then((x) => setActivePass(x));
         getVisitHistory(user.uid, setVisitHistory);
+        getUsername(user.uid, setUsername);
       });
     }
   }, [user]);
@@ -41,7 +43,7 @@ export default function Profile() {
         ПРОФИЛЬ
       </span>
       <p className='text-xl sm:text-2xl text-center'>
-        {}
+        {username}
       </p>
       <ActivePassDisplay userPasses={userPasses} activePass={activePass} />
       <VisitHistory visitHistory={visitHistory} user={user} />
@@ -51,6 +53,23 @@ export default function Profile() {
       </button>
     </main>
   )
+}
+
+async function getUsername(uid, callback) {
+  try {
+    const snapshot = await get(ref(db, `users/${uid}/name`));
+    if (!snapshot.exists()) {
+      console.warn("No passes found");
+      return null;
+    }
+    callback(snapshot.val());
+  }
+  catch(error) {
+    console.error(error);
+    return null;
+  }
+
+  return null;
 }
 
 async function getVisitHistory(uid, callback) {
