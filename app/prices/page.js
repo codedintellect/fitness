@@ -19,20 +19,23 @@ export default function Prices() {
 
 
   return (
-    <main className='flex flex-col text-left px-2 sm:mx-auto sm:max-w-2xl'>
+    <main className='flex flex-col gap-y-2 text-left px-2 h-full overflow-hidden sm:mx-auto sm:max-w-2xl'>
       <span className='text-4xl text-center my-4 sm:mt-6'>
         ЦЕНЫ
       </span>
       {listings.map((i, k) => {
         return (<Item key={`listing${k}`} title={i.title} price={i.price} subline={i.subline} message={i.message} />);
       })}
+      <div className='overflow-hidden rounded-t-xl mx-20 mt-auto'>
+        <img src='/heart.jpg' />
+      </div>
     </main>
   )
 }
 
 function Item({title, price, subline, message}) {
   return (
-    <div className='flex flex-row items-center bg-white p-2 m-1 rounded-2xl'>
+    <div className='flex flex-row items-center bg-white p-2 rounded-2xl'>
       <div className='grow'>
         {title} - {price}₽
         {subline != "" && <br></br>}
