@@ -36,11 +36,14 @@ export default function Auth() {
 
 function Field({hint, type, id, c, regex}) {
   return (
-    <div className={`flex flex-col bg-white px-2 border-black rounded-2xl overflow-hidden ${c}`}>
+    <div className={`relative flex flex-col bg-white px-2 border-black rounded-2xl overflow-hidden ${c}`}>
       <snap className='font-bold'>
         {hint}
       </snap>
-      <input className='rounded-2xl text-lg text-center' type={type} id={id} pattern={regex} onChange={(e)=>monitorValidity(e)} />
+      <snap className={`absolute ${type=='password' ? '' : 'hidden'} right-0 mx-2 text-gray-600`}>
+        минимум 6 символов
+      </snap>
+      <input className='rounded-2xl text-lg text-center' type={type} minLength={type=='password' ? 6 : 0} id={id} pattern={regex} onChange={(e)=>monitorValidity(e)} />
     </div>
   )
 }
@@ -56,6 +59,29 @@ function submit(isLogin, router) {
   let lastname = document.getElementById('lastname');
   let username = document.getElementById('username');
   let password = document.getElementById('password');
+
+  let valid = true;
+
+  if (!isLogin) {
+    if (firstname.value == '') {
+      valid = false;
+      firstname.parentElement.style.borderColor = 'rgb(255, 0, 0)'
+    }
+    if (lastname.value == '') {
+      valid = false;
+      lastname.parentElement.style.borderColor = 'rgb(255, 0, 0)'
+    }
+  }
+  if (username.value == '') {
+    valid = false;
+    username.parentElement.style.borderColor = 'rgb(255, 0, 0)'
+  }
+  if (password.value.length < 6) {
+    valid = false;
+    password.parentElement.style.borderColor = 'rgb(255, 0, 0)'
+  }
+
+  if (!valid) return;
 
   if (!isLogin) {
     if (!firstname.checkValidity()) {
@@ -81,7 +107,16 @@ function submit(isLogin, router) {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.error(error);
+        if (errorCode == 'auth/wrong-password') {
+          alert('Неверный пароль!\nЕсли вы забыли свой пароль свяжитесь с администратором.');
+        }
+        else if (errorCode == 'auth/user-not-found') {
+          alert('Этого пользователя нет в нашей системе.');
+        }
+        else {
+          console.error(error);
+          alert(error);
+        }
       });
   }
   else {
@@ -99,7 +134,13 @@ function submit(isLogin, router) {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.error(error);
+        if (errorCode == 'auth/email-already-in-use') {
+          alert('Данный логин уже занят существующим пользователем');
+        }
+        else {
+          console.error(error);
+          alert(error);
+        }
       });
   }
 }
