@@ -30,6 +30,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang='ru' className={`${neucha.variable} ${marck.variable}`}>
+      <head>
+        <title>SanchosFit</title>
+      </head>
       <body>
         <UserContext.Provider value={user}>
           <SideMenu sideMenu={sideMenu} toggleMenu={toggleMenu} user={user} />
