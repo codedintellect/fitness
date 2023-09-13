@@ -55,10 +55,10 @@ function AddPurchase(userId, listings) {
     expiresOn: new Date(expirationDate).getTime()
   };
 
-  const newKey = push(ref(db, `users/${userId}/passes`)).key;
+  const newKey = push(ref(db, `passes/${userId}`)).key;
 
   const updates = {};
-  updates[`users/${userId}/passes/${newKey}`] = payload;
+  updates[`passes/${userId}/${newKey}`] = payload;
 
   return update(ref(db), updates);
 }

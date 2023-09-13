@@ -5,7 +5,7 @@ export default async function getActivePass(uid) {
   const db = getDatabase(app);
   let passes = null;
   try {
-    const q = query(ref(db, `users/${uid}/passes`), orderByChild('expiresOn'), startAfter(new Date().getTime()));
+    const q = query(ref(db, `passes/${uid}`), orderByChild('expiresOn'), startAfter(new Date().getTime()));
     const snapshot = await get(q);
     if (!snapshot.exists()) {
       console.warn("No passes found");

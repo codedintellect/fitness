@@ -17,7 +17,7 @@ const db = getDatabase(app);
 
 export default function Profile() {
   const user = useContext(UserContext);
-  const [userData, setUserData] = useState({});
+  const [userPasses, setUserPasses] = useState({});
   const [activePass, setActivePass] = useState('');
   const [visitHistory, setVisitHistory] = useState({});
 
@@ -25,11 +25,10 @@ export default function Profile() {
 
   useEffect(() => {
     if (user) {
-      const userNumber = user.uid;
-      const userRef = ref(db, `users/${userNumber}`);
+      const userRef = ref(db, `passes/${user.uid}`);
 
       return onValue(userRef, (snapshot) => {
-        setUserData(snapshot.val());
+        setUserPasses(snapshot.val());
         getActivePass(user.uid).then((x) => setActivePass(x));
         getVisitHistory(user.uid, setVisitHistory);
       });
@@ -42,11 +41,11 @@ export default function Profile() {
         ПРОФИЛЬ
       </span>
       <p className='text-xl sm:text-2xl text-center'>
-        {userData['name']}
+        {}
       </p>
-      <ActivePassDisplay userData={userData} activePass={activePass} />
+      <ActivePassDisplay userPasses={userPasses} activePass={activePass} />
       <VisitHistory visitHistory={visitHistory} user={user} />
-      <PurchaseHistory userData={userData} />
+      <PurchaseHistory passes={userPasses} />
       <button className='w-fit text-2xl bg-red-400 px-2 mx-auto my-2 border-2 border-black rounded-lg' onClick={()=>logout(router)}>
         выйти
       </button>
@@ -82,7 +81,7 @@ async function getVisitHistory(uid, callback) {
   return null;
 }
 
-function ActivePassDisplay({userData, activePass}) {
+function ActivePassDisplay({userPasses, activePass}) {
   if (!activePass) {
     return (
       <div className='relative bg-white border-2 border-black rounded-xl p-2 flex flex-row gap-x-2 items-center text-lg overflow-hidden'>
@@ -99,7 +98,7 @@ function ActivePassDisplay({userData, activePass}) {
     )
   }
 
-  const activePassData = userData['passes'][activePass];
+  const activePassData = userPasses[activePass];
   const expiresSoon = activePassData['expiresOn'] < new Date().getTime() + 1000 * 60 * 60 * 24 * 7;
   return (
     <div className='bg-white border-2 border-black rounded-xl p-2 flex flex-row flex-wrap gap-x-2 items-center text-lg'>
@@ -157,10 +156,9 @@ function VisitHistory({visitHistory, user}) {
   )
 }
 
-function PurchaseHistory({userData}) {
-  if (typeof(userData) != 'object' || !userData.hasOwnProperty('passes')) return;
-
-  let passes = userData['passes']
+function PurchaseHistory({passes}) {
+  if (!passes) return;
+  
   let purchases = Object.keys(passes).sort((a, b) => (passes[b]['purchasedOn'] - passes[a]['purchasedOn']));
 
   function passStatus(data) {

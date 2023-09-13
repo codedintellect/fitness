@@ -29,7 +29,6 @@ export default function Schedule() {
 
     return onValue(q, (snapshot) => {
       setSessions(snapshot.val());
-      console.log(q);
     });
   }, []);
 
@@ -187,7 +186,7 @@ async function Attend(sessionId) {
   const visitId = push(ref(db, `sessions/${sessionId}/attendees/`)).key;
 
   const updates = {};
-  updates[`users/${user.uid}/passes/${activePass}/sessions/${visitId}`] = sessionId;
+  updates[`passes/${user.uid}/${activePass}/sessions/${visitId}`] = sessionId;
   updates[`sessions/${sessionId}/attendees/${user.uid}`] = visitId;
 
   return update(ref(db), updates);
@@ -198,7 +197,7 @@ export async function Cancel(sessionId, u, s) {
   s = s || sessions;
   let passes = null;
   try {
-    const snapshot = await get(ref(db, `users/${u.uid}/passes`));
+    const snapshot = await get(ref(db, `passes/${u.uid}`));
     if (!snapshot.exists()) {
       console.warn("No passes found");
       return;
@@ -218,7 +217,7 @@ export async function Cancel(sessionId, u, s) {
     .find((key) => (Object.keys(passes[key]["sessions"]).includes(visitId)));
 
   const updates = {};
-  updates[`users/${u.uid}/passes/${activePass}/sessions/${visitId}`] = null;
+  updates[`passes/${u.uid}/${activePass}/sessions/${visitId}`] = null;
   updates[`sessions/${sessionId}/attendees/${u.uid}`] = null;
 
   return update(ref(db), updates);
