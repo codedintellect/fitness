@@ -42,12 +42,15 @@ export default function Users() {
         <span className='text-xl whitespace-nowrap'>
           {data.hasOwnProperty('attendees') ? Object.keys(data['attendees']).length : '0'} / {data['slots']}
         </span>
-        <button className='bg-white px-2 pt-1 rounded-md' onClick={()=>(selectSession(k))}>
+        <button className='bg-white px-2 pt-1 rounded-md hidden' disabled onClick={()=>(selectSession(k))}>
           <span className='bi bi-pencil-fill' />
         </button>
-        <span className='basis-full'>
-          {data.hasOwnProperty('attendees') && Object.keys(data['attendees']).map((x) => (
-            users.hasOwnProperty(x) && users[x]['name'] + ' '
+        <span className='basis-full flex flex-wrap gap-x-1'>
+          {data.hasOwnProperty('attendees') && Object.keys(data['attendees']).map((x, i, arr) => (
+            <span className='whitespace-nowrap'>
+              {(users.hasOwnProperty(x) && users[x].hasOwnProperty('name') ? users[x]['name'] : 'UNKNOWN').trim()}
+              {i + 1 < arr.length ? ',' : ''}
+            </span>
           ))}
         </span>
       </div>
@@ -82,7 +85,7 @@ export default function Users() {
   return (
     <main className='relative flex flex-col text-left mx-4 mb-10 sm:mx-auto sm:max-w-2xl h-full'>
       <span className='text-4xl text-center mt-4 sm:mt-6'>
-        ПОЛЬЗОВАТЕЛИ
+        ТРЕНИРОВКИ
       </span>
       {generateInfo()}
       <EditSession data={sessions} selectedSession={selectedSession} selectSession={selectSession} />
