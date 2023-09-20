@@ -131,7 +131,7 @@ function ActivePassDisplay({userPasses, activePass}) {
         Годен до: 
       </span>
       <span className={`font-bold grow ${expiresSoon ? 'text-red-400' : ''}`}>
-        {new Date(activePassData['expiresOn']).toLocaleDateString('ru-ru', {month: "long", day: "numeric", year:"numeric", timeZone: 'UTC'})}
+        {activePassData['expiresOn'] < 253402214400000 ? new Date(activePassData['expiresOn']).toLocaleDateString('ru-ru', {month: "long", day: "numeric", year:"numeric", timeZone: 'UTC'}) : 'БЕССРОЧЕН'}
       </span>
       <span className='text-gray-700'>
         Посещений:
