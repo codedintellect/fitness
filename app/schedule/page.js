@@ -115,12 +115,13 @@ export default function Schedule() {
 function Day({day, sessions}) {
   const dayOfWeek = ['ВОСКРЕСЕНЬЕ', 'ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА'];
   const empty = Object.entries(sessions).length > 0;
+  const past = new Date() - day > 1000*60*60*24;
 
   let bgColor = 'bg-white';
   if (empty) {
     bgColor = 'bg-selection';
   }
-  if (new Date() - day > 1000*60*60*24) {
+  if (past) {
     bgColor = 'bg-gray-200';
   }
 
@@ -139,7 +140,7 @@ function Day({day, sessions}) {
           НЕТ ЗАНЯТИЙ
         </span>
       </div>
-      <div className='flex flex-col text-white text-xl divide-y divide-white'>
+      <div className={`flex flex-col ${past ? 'text-black divide-black' : 'text-white divide-white'} text-xl divide-y`}>
         {Object.keys(sessions).map((key) => (
           <Session key={key} sessionId={key} />
         ))}
@@ -154,6 +155,7 @@ function Session({sessionId}) {
   const endTime = new Date(session["end"]).toLocaleString('ru-ru', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
   const attending = user ? sessions[sessionId]["attendees"] ? sessions[sessionId]["attendees"].hasOwnProperty(user.uid) : false : false;
   const full = session["attendees"] ? Object.values(session["attendees"]).length == session['slots'] : false;
+  const past = new Date() - sessions[sessionId]['start'] > 0;
   return (
     <div className='flex gap-2'>
       <div className='flex flex-wrap sm:flex-nowrap gap-x-3 basis-full pt-1 whitespace-nowrap'>
@@ -167,8 +169,8 @@ function Session({sessionId}) {
           {session["attendees"] ? Object.values(session["attendees"]).length : 0} / {session["slots"]}
         </span>
       </div>
-      <input className={`${attending && 'hidden'} ${full ? 'bg-gray-400' : 'bg-white'} text-black font-bold px-2 my-auto rounded-lg`} disabled={full} type='button' value='ЗАПИСАТЬСЯ' onClick={()=>(Attend(sessionId))}/>
-      <input className={`${!attending && 'hidden'} bg-red-300 text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ОТМЕНИТЬ' onClick={()=>(Cancel(sessionId))}/>
+      <input className={`${attending && 'hidden'} ${past && 'hidden'}  ${full ? 'bg-fallback text-gray-600' : 'bg-white text-black'} font-bold px-2 my-auto rounded-lg`} disabled={full} type='button' value='ЗАПИСАТЬСЯ' onClick={()=>(Attend(sessionId))}/>
+      <input className={`${!attending && 'hidden'} ${past && 'hidden'} bg-red-300 text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ОТМЕНИТЬ' onClick={()=>(Cancel(sessionId))}/>
     </div>
   )
 }
