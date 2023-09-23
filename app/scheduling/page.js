@@ -35,10 +35,15 @@ export default function Users() {
     const time = (x) => (new Date(x).toLocaleTimeString('ru-ru', {hour:'2-digit', minute:'2-digit', timeZone:'UTC'}))
 
     return (
-      <div className='flex flex-wrap items-center pt-1'>
-        <span className='text-xl grow'>
+      <div className='relative flex flex-wrap items-center pt-1'>
+        <span className='text-xl grow' title={k}>
           {time(data['start'])}-{time(data['end'])} {data['title']}
         </span>
+        <div hidden={!data['canceled']} className='absolute my-auto backdrop-blur-[1px] w-full -translate-x-1/2 left-1/2'>
+          <div className='relative w-full text-xl text-center text-red-400 font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+            ОТМЕНА
+          </div>
+        </div>
         <span className='text-xl whitespace-nowrap'>
           {data.hasOwnProperty('attendees') ? Object.keys(data['attendees']).length : '0'} / {data['slots']}
         </span>

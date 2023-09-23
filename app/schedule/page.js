@@ -156,21 +156,25 @@ function Session({sessionId}) {
   const attending = user ? sessions[sessionId]["attendees"] ? sessions[sessionId]["attendees"].hasOwnProperty(user.uid) : false : false;
   const full = session["attendees"] ? Object.values(session["attendees"]).length == session['slots'] : false;
   const past = new Date() - sessions[sessionId]['start'] > 0;
+  const cancelled = sessions[sessionId]['canceled'];
   return (
     <div className='flex gap-2'>
-      <div className='flex flex-wrap sm:flex-nowrap gap-x-3 basis-full pt-1 whitespace-nowrap'>
+      <div className='relative flex flex-wrap sm:flex-nowrap gap-x-3 basis-full pt-1 whitespace-nowrap'>
         <span>
           {startTime} - {endTime}
         </span>
-        <span className='font-bold basis-full max-sm:order-first'>
+        <span className={`font-bold basis-full max-sm:order-first ${cancelled && 'line-through'}`}>
           {session["title"]}
         </span>
         <span>
-          {session["attendees"] ? Object.values(session["attendees"]).length : 0} / {session["slots"]}
+          {`${session["attendees"] ? Object.values(session["attendees"]).length : 0} / ${session["slots"]}`}
         </span>
       </div>
-      <input className={`${attending && 'hidden'} ${past && 'hidden'}  ${full ? 'bg-fallback text-gray-600' : 'bg-white text-black'} font-bold px-2 my-auto rounded-lg`} disabled={full} type='button' value='ЗАПИСАТЬСЯ' onClick={()=>(Attend(sessionId))}/>
-      <input className={`${!attending && 'hidden'} ${past && 'hidden'} bg-red-300 text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ОТМЕНИТЬ' onClick={()=>(Cancel(sessionId))}/>
+      <input hidden={cancelled || past || attending} className={`${full ? 'bg-fallback text-gray-600' : 'bg-white text-black'} font-bold px-2 my-auto rounded-lg`} disabled={full} type='button' value='ЗАПИСАТЬСЯ' onClick={()=>(Attend(sessionId))}/>
+      <input hidden={cancelled || past || !attending} className={`bg-red-300 text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ОТМЕНИТЬ' onClick={()=>(Cancel(sessionId))}/>
+      <span hidden={!cancelled} className='text-red-400 font-bold pt-1 my-auto drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+        ОТМЕНА
+      </span>
     </div>
   )
 }
