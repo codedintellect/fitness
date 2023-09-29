@@ -47,7 +47,7 @@ export default function Users() {
         <span className='text-xl whitespace-nowrap'>
           {data.hasOwnProperty('attendees') ? Object.keys(data['attendees']).length : '0'} / {data['slots']}
         </span>
-        <button className='bg-white px-2 pt-1 rounded-md hidden' disabled onClick={()=>(selectSession(k))}>
+        <button className='bg-white px-2 pt-1 rounded-md hidden' onClick={()=>(selectSession(k))}>
           <span className='bi bi-pencil-fill' />
         </button>
         <span className='basis-full flex flex-wrap gap-x-1'>

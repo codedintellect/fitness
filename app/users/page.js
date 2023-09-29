@@ -99,7 +99,7 @@ export default function Users() {
         <span title={k} className='text-xl grow'>
           {data['name'].split(' ').reverse().join(' ')}
         </span>
-        <button className='bg-white p-1 rounded-md hidden' disabled onClick={()=>(selectUser(k))}>
+        <button className='bg-white p-1 rounded-md hidden' onClick={()=>(selectUser(k))}>
           <span className='bi bi-pencil-fill' />
         </button>
         <div className='basis-full flex flex-col divide-y divide-black'>

@@ -31,7 +31,7 @@ export default function Profile() {
       return onValue(userRef, (snapshot) => {
         setUserPasses(snapshot.val());
         getActivePass(user.uid).then((x) => setActivePass(x));
-        getVisitHistory(user.uid, setVisitHistory);
+        getVisitHistory(user.uid, snapshot.val(), setVisitHistory);
         getUsername(user.uid, setUsername);
       });
     }
@@ -72,7 +72,7 @@ async function getUsername(uid, callback) {
   return null;
 }
 
-async function getVisitHistory(uid, callback) {
+async function getVisitHistory(uid, passes, callback) {
   let sessions = null;
   try {
     const lastMonth = new Date().setMonth(new Date().getMonth() - 1);
@@ -89,12 +89,22 @@ async function getVisitHistory(uid, callback) {
     return null;
   }
 
-  const attended = Object.keys(sessions)
+  let attended = Object.keys(sessions)
     .filter((key) => (sessions[key].hasOwnProperty('attendees')))
     .filter((key) => (sessions[key]['attendees'].hasOwnProperty(uid)))
     .reduce( (res, key) => (res[key] = sessions[key], res), {} );
+
+  for (let k of Object.keys(passes)) {
+    if (passes[k]["private"] && passes[k].hasOwnProperty("sessions")) {
+      for (let s of Object.keys(passes[k]["sessions"])) {
+        attended[s] = passes[k]["sessions"][s];
+      }
+    }
+  }
   
-  //validPasses.sort((a, b) => passes[a]["expiresOn"] - passes[b]["expiresOn"]);
+  attended = Object.keys(attended)
+    .sort((a, b) => attended[b]["start"] - attended[a]["start"])
+    .reduce( (res, key) => (res[key] = attended[key], res), {} );
 
   callback(attended);
   return null;
@@ -163,7 +173,7 @@ function VisitHistory({visitHistory, user}) {
             <span className='font-bold grow max-sm:basis-full max-sm:order-first max-sm:text-center'>
               {visitHistory[x]['title']}
             </span>
-            <div className='max-sm:grow max-sm:flex-1'>
+            <div className='max-sm:grow max-sm:flex-1' hidden={!visitHistory[x].hasOwnProperty("attendees")}>
               <button className={`float-right px-2 ${new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start'] ? 'bg-gray-200 text-fallback' : 'bg-red-400'} rounded-md`} disabled={new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start']} onClick={() => Cancel(x, user, visitHistory)}>
                 отмена
               </button>
