@@ -35,3 +35,7 @@ h6 {
 * {
   font-family: var(--neucha-font), sans-serif;
 }
+
+body ::-webkit-scrollbar {
+  width: 0;
+}

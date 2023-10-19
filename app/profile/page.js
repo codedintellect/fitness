@@ -173,7 +173,7 @@ function VisitHistory({visitHistory, user}) {
             <span className='font-bold grow max-sm:basis-full max-sm:order-first max-sm:text-center'>
               {visitHistory[x]['title']}
             </span>
-            <div className='max-sm:grow max-sm:flex-1' hidden={!visitHistory[x].hasOwnProperty("attendees")}>
+            <div className='max-sm:grow max-sm:flex-1' hidden={!visitHistory[x].hasOwnProperty("attendees") || (visitHistory[x].hasOwnProperty("canceled") && visitHistory[x]['canceled'])}>
               <button className={`float-right px-2 ${new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start'] ? 'bg-gray-200 text-fallback' : 'bg-red-400'} rounded-md`} disabled={new Date().getTime() + 1000 * 60 * 60 * 3 >= visitHistory[x]['start']} onClick={() => Cancel(x, user, visitHistory)}>
                 отмена
               </button>

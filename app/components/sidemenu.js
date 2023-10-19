@@ -47,10 +47,10 @@ export default function SideMenu({sideMenu, toggleMenu}) {
             <img src='/sidebg.jpg' />
             <div className='absolute top-0 w-full h-20 bg-gradient-to-b from-fallback to-transparent'></div>
           </div>
-          <span className='w-full text-4xl text-center font-bold mt-3'>
+          <span className='w-full text-4xl text-center font-bold mt-3 z-10'>
             Информация
           </span>
-          <div className='grow flex flex-col gap-1 overflow-scroll px-2 z-[1]'>
+          <div className='grow flex flex-col gap-1 overflow-y-scroll px-2 z-[1]'>
             {
               options.map((item, index) => {
                 return (
