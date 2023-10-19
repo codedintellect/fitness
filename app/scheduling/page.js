@@ -81,7 +81,7 @@ export default function Users() {
     }
 
     for (let date of Object.keys(data)) {
-      if (date > new Date().toISOString().substring(0,10)) {
+      if (date >= new Date().toISOString().substring(0,10)) {
         offset = Object.keys(data).indexOf(date);
         break;
       }
