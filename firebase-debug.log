@@ -1,0 +1,38 @@
+[debug] [2023-11-05T19:12:06.750Z] ----------------------------------------------------------------------
+[debug] [2023-11-05T19:12:06.752Z] Command:       /usr/bin/node /home/dmitri/git/fitness/node_modules/.bin/firebase deploy
+[debug] [2023-11-05T19:12:06.752Z] CLI Version:   12.5.3
+[debug] [2023-11-05T19:12:06.752Z] Platform:      linux
+[debug] [2023-11-05T19:12:06.752Z] Node Version:  v20.9.0
+[debug] [2023-11-05T19:12:06.753Z] Time:          Sun Nov 05 2023 13:12:06 GMT-0600 (Central Standard Time)
+[debug] [2023-11-05T19:12:06.753Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-11-05T19:12:06.755Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2023-11-05T19:12:06.829Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-11-05T19:12:06.829Z] > authorizing via signed-in user (codedintellect@gmail.com)
+[debug] [2023-11-05T19:12:06.829Z] [iam] checking project sanchos-fit for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-11-05T19:12:06.830Z] > refreshing access token with scopes: []
+[debug] [2023-11-05T19:12:06.831Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-11-05T19:12:06.831Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-05T19:12:06.974Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2023-11-05T19:12:06.976Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2023-11-05T19:12:07.021Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-11-05T19:12:07.021Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-05T19:12:07.026Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/sanchos-fit:testIamPermissions [none]
+[debug] [2023-11-05T19:12:07.026Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/sanchos-fit:testIamPermissions x-goog-quota-user=projects/sanchos-fit
+[debug] [2023-11-05T19:12:07.026Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sanchos-fit:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-11-05T19:12:07.252Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/sanchos-fit:testIamPermissions 200
+[debug] [2023-11-05T19:12:07.253Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sanchos-fit:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-11-05T19:12:07.256Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sanchos-fit [none]
+[debug] [2023-11-05T19:12:07.489Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sanchos-fit 200
+[debug] [2023-11-05T19:12:07.489Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sanchos-fit {"projectId":"sanchos-fit","projectNumber":"904254414585","displayName":"sanchos-fit","name":"projects/sanchos-fit","resources":{"hostingSite":"sanchos-fit","realtimeDatabaseInstance":"sanchos-fit-default-rtdb","storageBucket":"sanchos-fit.appspot.com","locationId":"europe-central2"},"state":"ACTIVE","etag":"1_75dfe3f0-9803-463a-aedc-a8142140cdbc"}
+[info] 
+[info] === Deploying to 'sanchos-fit'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2023-11-05T19:12:07.492Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/sanchos-fit/versions [none]
+[debug] [2023-11-05T19:12:07.492Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/sanchos-fit/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2023-11-05T19:12:08.360Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/sanchos-fit/versions 200
+[debug] [2023-11-05T19:12:08.360Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/sanchos-fit/versions {"name":"projects/904254414585/sites/sanchos-fit/versions/29fdae11c51bc73a","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[sanchos-fit]: beginning deploy... 
+[info] i  hosting[sanchos-fit]: found 59 files in out 
+[debug] [2023-11-05T19:12:08.389Z] [hosting] uploading with 200 concurrency

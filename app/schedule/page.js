@@ -149,6 +149,20 @@ function Day({day, sessions}) {
   )
 }
 
+function optionButton(sessionId, cancelled, past, attending, full) {
+  if (cancelled || past) return;
+  let colors = "bg-white text-black";
+  if (full) colors = "bg-fallback text-gray-600";
+  if (attending) colors = "bg-red-300 text-black";
+  return (
+    <input
+      className={`${colors} font-bold px-2 my-auto rounded-lg`}
+      disabled={!attending && full}
+      type='button'
+      value={attending ? 'ОТМЕНИТЬ' : full ? 'НЕТ МЕСТ' : 'ЗАПИСАТЬСЯ'}
+      onClick={()=>(attending ? Cancel(sessionId) : full ? null : Attend(sessionId))}/>)
+}
+
 function Session({sessionId}) {
   const session = sessions[sessionId];
   const startTime = new Date(session["start"]).toLocaleString('ru-ru', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
@@ -170,8 +184,7 @@ function Session({sessionId}) {
           {`${session["attendees"] ? Object.values(session["attendees"]).length : 0} / ${session["slots"]}`}
         </span>
       </div>
-      <input hidden={cancelled || past || attending} className={`${full ? 'bg-fallback text-gray-600' : 'bg-white text-black'} font-bold px-2 my-auto rounded-lg`} disabled={full} type='button' value='ЗАПИСАТЬСЯ' onClick={()=>(Attend(sessionId))}/>
-      <input hidden={cancelled || past || !attending} className={`bg-red-300 text-black font-bold px-2 my-auto rounded-lg`} type='button' value='ОТМЕНИТЬ' onClick={()=>(Cancel(sessionId))}/>
+      {optionButton(sessionId, cancelled, past, attending, full)}
       <span hidden={!cancelled} className='text-red-400 font-bold pt-1 my-auto drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
         ОТМЕНА
       </span>
