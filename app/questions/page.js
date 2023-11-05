@@ -12,8 +12,8 @@ export default function Questions() {
 
   return (
     <main className='flex flex-col justify-center justify-items-center basis-full text-left mx-4 h-full sm:mx-auto sm:max-w-2xl'>
-      {data.map((x) => (
-        <Question q={x['q']} a={x['a']} />
+      {data.map((x, index) => (
+        <Question q={x['q']} a={x['a']} key={index} />
       ))}
     </main>
   )
