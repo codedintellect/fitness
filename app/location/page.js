@@ -27,17 +27,17 @@ export default function Location() {
       <span className='w-full top-0 text-4xl text-center my-3'>
         АДРЕС ЗАЛА
       </span>
-      <div className='relative aspect-[10/16]'>
+      <div className='relative grow max-h-[67rem]'>
         <div id='gallery' className="h-full overflow-y-scroll flex gap-x-2 px-[40%] no-scrollbar snap-x snap-mandatory">
           {images.map((imgId) => (
             <div key={imgId} style={{backgroundImage: `url("/location/guide${imgId}.jpeg")`}} className="h-full aspect-[9/16] bg-contain bg-no-repeat rounded-3xl snap-center snap-always"></div>
           ))}
           <div className="absolute inset-0 flex items-stretch text-4xl text-selection pointer-events-none">
-            <div className="grow bg-gradient-to-r from-primary via-primary via-30% to-transparent">
+            <div className="grow bg-gradient-to-r from-primary via-primary via-30% to-[rgba(var(--background-rgb), 0)]">
               <i id='scrollLeft' className="relative bg-primary pt-2 rounded-full bi bi-caret-left -translate-y-1/2 top-1/2 pointer-events-auto" onClick={scrollClick}></i>
             </div>
-            <div className="aspect-[9/16]"></div>
-            <div className="grow bg-gradient-to-l from-primary via-primary via-30% to-transparent">
+            <div className="h-full aspect-[9/16]"></div>
+            <div className="grow bg-gradient-to-l from-primary via-primary via-30% to-[rgba(var(--background-rgb), 0)]">
               <i id='scrollRight' className="relative bg-primary pt-2 rounded-full bi bi-caret-right -translate-y-1/2 top-1/2 pointer-events-auto float-right" onClick={scrollClick}></i>
             </div>
           </div>
