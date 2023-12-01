@@ -3,6 +3,7 @@ node_modules
 
 .next
 .firebase
+firebase-debug.log
 
 # Build directory
 out
