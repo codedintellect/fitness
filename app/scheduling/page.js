@@ -34,27 +34,27 @@ export default function Users() {
 
   useEffect(() => {
     let calendar = document.getElementById('calendar');
-    let day = calendar.querySelector(`:nth-child(${offset + 2})`);
-    document.documentElement.scrollTo(0, day ? day.offsetTop : 0);
+    let day = calendar.querySelector(`:nth-child(${offset})`);
+    calendar.scrollTo(0, day ? day.offsetTop - calendar.offsetTop : 0);
   }, [sessions]);
 
   function Session({k, data}) {
     const time = (x) => (new Date(x).toLocaleTimeString('ru-ru', {hour:'2-digit', minute:'2-digit', timeZone:'UTC'}))
 
     return (
-      <div className='relative flex flex-wrap items-center pt-1'>
-        <span className='text-xl grow' title={k}>
+      <div className='relative flex flex-wrap items-center gap-x-2 pt-1'>
+        <span className='text-xl basis-1/2 grow shrink truncate' title={k}>
           {time(data['start'])}-{time(data['end'])} {data['title']}
         </span>
-        <div hidden={!data['canceled']} className='absolute my-auto backdrop-blur-[1px] w-full -translate-x-1/2 left-1/2'>
-          <div className='relative w-full text-xl text-center text-red-400 font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+        <div hidden={!data['canceled']} className='absolute my-auto backdrop-blur-[1px] w-full h-full -translate-x-1/2 left-1/2'>
+          <div className='relative w-full -translate-y-1/2 top-1/2 text-xl text-center text-red-400 font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
             ОТМЕНА
           </div>
         </div>
         <span className='text-xl whitespace-nowrap'>
           {data.hasOwnProperty('attendees') ? Object.keys(data['attendees']).length : '0'} / {data['slots']}
         </span>
-        <button className='bg-white px-2 pt-1 rounded-md hidden' onClick={()=>(selectSession(k))}>
+        <button hidden={data['canceled']} className='bg-white px-2 pt-1 rounded-md' onClick={()=>(selectSession(k))}>
           <span className='bi bi-pencil-fill' />
         </button>
         <span className='basis-full flex flex-wrap gap-x-1'>
@@ -88,7 +88,7 @@ export default function Users() {
     }
 
     return Object.keys(data).map((date) => (
-      <div key={date} className='flex flex-col mt-2'>
+      <div key={date} className='flex flex-col'>
         <span className='relative bg-primary px-2 mx-auto translate-y-2 text-2xl font-bold z-1'>
           {new Date(date).toLocaleDateString('ru-ru', {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'})}
         </span>
@@ -102,11 +102,13 @@ export default function Users() {
   }
   
   return (
-    <main id='calendar' className='relative flex flex-col text-left mx-4 mb-10 sm:mx-auto sm:max-w-2xl h-full'>
-      <span className='text-4xl text-center mt-4 sm:mt-6'>
+    <main className='absolute -translate-x-1/2 left-1/2 w-full max-w-2xl h-full flex flex-col'>
+      <span className='text-4xl text-center my-3'>
         ТРЕНИРОВКИ
       </span>
-      {generateInfo()}
+      <div id='calendar' className='flex flex-col gap-2 text-left px-4 pb-2 overflow-y-scroll'>
+        {generateInfo()}
+      </div>
       <EditSession data={sessions} selectedSession={selectedSession} selectSession={selectSession} />
     </main>
   )

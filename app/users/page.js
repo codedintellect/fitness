@@ -99,7 +99,7 @@ export default function Users() {
         <span title={k} className='text-xl grow'>
           {data['name'].split(' ').reverse().join(' ')}
         </span>
-        <button className='bg-white p-1 rounded-md hidden' onClick={()=>(selectUser(k))}>
+        <button className='bg-white p-1 rounded-md' onClick={()=>(selectUser(k))}>
           <span className='bi bi-pencil-fill' />
         </button>
         <div className='basis-full flex flex-col divide-y divide-black'>
@@ -115,13 +115,15 @@ export default function Users() {
   }
   
   return (
-    <main className='relative flex flex-col text-left mx-4 mb-2 gap-2 sm:mx-auto sm:max-w-2xl'>
-      <span className='text-4xl text-center mt-4 sm:mt-6'>
+    <main className='absolute -translate-x-1/2 left-1/2 w-full max-w-2xl h-full flex flex-col'>
+      <span className='text-4xl text-center my-3'>
         ПОЛЬЗОВАТЕЛИ
       </span>
-      {Object.keys(users).sort((a,b) => (lastnameSort(users[a]['name'], users[b]['name']))).map((key) => (
-        <User key={key} k={key} data={users[key]} />
-      ))}
+      <div className='flex flex-col gap-2 text-left px-4 pb-2 overflow-y-scroll'>
+        {Object.keys(users).sort((a,b) => (lastnameSort(users[a]['name'], users[b]['name']))).map((key) => (
+          <User key={key} k={key} data={users[key]} />
+        ))}
+      </div>
       <EditUser user={selectedUser} data={users} listings={listings} selectedUser={selectedUser} selectUser={selectUser} />
     </main>
   )

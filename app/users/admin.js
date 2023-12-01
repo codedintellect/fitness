@@ -8,7 +8,7 @@ const db = getDatabase(app);
 export default function EditUser({user, data, listings, selectedUser, selectUser}) {
   if (user === '') return;
   return (
-    <div className='absolute flex flex-wrap gap-2 w-full p-6 md:mb-2 bottom-0 rounded-t-3xl md:rounded-b-3xl bg-red-400'>
+    <div className='fixed flex flex-wrap gap-2 w-full p-4 md:mb-2 bottom-0 rounded-t-3xl md:rounded-b-3xl bg-red-400'>
       <span className='text-3xl text-center basis-full'>
         {data[user]['name']}
       </span>
@@ -21,13 +21,13 @@ export default function EditUser({user, data, listings, selectedUser, selectUser
             <option value={i}>{x['title']}</option>
           ))}
         </select>
-        <div className='flex flex-col m-1'>
+        <div className='grow flex flex-col m-1'>
           <span className='text-center'>
             ДАТА ПОКУПКИ
           </span>
           <input type='date' id='purchaseDate' />
         </div>
-        <div className='flex flex-col m-1'>
+        <div className='grow flex flex-col m-1'>
           <span className='text-center'>
             ДАТА ИСТЕЧЕНИЯ
           </span>
