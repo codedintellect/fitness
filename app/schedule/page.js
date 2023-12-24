@@ -41,7 +41,7 @@ export default function Schedule() {
     for (var i = 0; i < availableMonths; i++) {
       whitelist.push((new Date().getMonth() + i) % 12);
     }
-    return !(whitelist.includes(selectedMonth + delta));
+    return !(whitelist.includes((selectedMonth + delta + 12) % 12));
   }
 
   function changeMonth(delta) {
