@@ -76,7 +76,7 @@ async function getVisitHistory(uid, passes, callback) {
   let sessions = null;
   try {
     const lastMonth = new Date().setMonth(new Date().getMonth() - 1);
-    const q = query(ref(db, 'sessions'), orderByChild('start'), startAfter(lastMonth));
+    const q = query(ref(db, 'sessions'), orderByChild('start'), limit(16));
     const snapshot = await get(q);
     if (!snapshot.exists()) {
       console.warn("No passes found");
@@ -162,7 +162,7 @@ function VisitHistory({visitHistory, user}) {
         История записей:
       </span>
       <div className='flex flex-col w-full divide-y divide-black'>
-        {Object.keys(visitHistory).map((x) => (
+        {Object.keys(visitHistory).map((x, i) => (
           <div key={x} className='flex flex-wrap gap-x-2 pt-1'>
             <span className='max-sm:grow max-sm:flex-1'>
               {new Date(visitHistory[x]['start']).toLocaleDateString('ru-ru', {day:'2-digit', month:'2-digit', year:'numeric', timeZone: 'UTC'})}

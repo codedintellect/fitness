@@ -149,17 +149,19 @@ function Day({day, sessions}) {
   )
 }
 
-function optionButton(sessionId, cancelled, past, attending, full) {
+function optionButton(sessionId, cancelled, past, cancelDeadline, attending, full) {
   if (cancelled || past) return;
+  // if (attending && past) return;
   let colors = "bg-white text-black";
   if (full) colors = "bg-fallback text-gray-600";
   if (attending) colors = "bg-red-300 text-black";
+  if (attending && cancelDeadline) colors = "bg-fallback text-gray-600";
   return (
     <input
       className={`${colors} font-bold px-2 my-auto rounded-lg`}
-      disabled={!attending && full}
+      disabled={(!attending && full) || (attending && cancelDeadline)}
       type='button'
-      value={attending ? 'ОТМЕНИТЬ' : full ? 'НЕТ МЕСТ' : 'ЗАПИСАТЬСЯ'}
+      value={attending ? cancelDeadline ? 'ЗАПИСАН' : 'ОТМЕНИТЬ' : full ? 'НЕТ МЕСТ' : 'ЗАПИСАТЬСЯ'}
       onClick={()=>(attending ? Cancel(sessionId) : full ? null : Attend(sessionId))}/>)
 }
 
@@ -170,6 +172,7 @@ function Session({sessionId}) {
   const attending = user ? sessions[sessionId]["attendees"] ? sessions[sessionId]["attendees"].hasOwnProperty(user.uid) : false : false;
   const full = session["attendees"] ? Object.values(session["attendees"]).length == session['slots'] : false;
   const past = new Date() - sessions[sessionId]['start'] > 0;
+  const cancelDeadline = new Date() - sessions[sessionId]['start'] > -24 * 60 * 60 * 1000;
   const cancelled = sessions[sessionId]['canceled'];
   return (
     <div className='flex gap-2'>
@@ -184,7 +187,7 @@ function Session({sessionId}) {
           {`${session["attendees"] ? Object.values(session["attendees"]).length : 0} / ${session["slots"]}`}
         </span>
       </div>
-      {optionButton(sessionId, cancelled, past, attending, full)}
+      {optionButton(sessionId, cancelled, past, cancelDeadline, attending, full)}
       <span hidden={!cancelled} className='text-red-400 font-bold pt-1 my-auto drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
         ОТМЕНА
       </span>
